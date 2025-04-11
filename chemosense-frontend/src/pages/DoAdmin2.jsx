@@ -14,7 +14,7 @@ function DoAdmin2() {
     }, []);
 
     const handlePrevious = () => {
-        navigate("/DoAdmin1");
+        navigate("/admin/DoAdmin1");
     };
 
     const handleNext = () => {
@@ -23,53 +23,55 @@ function DoAdmin2() {
 
     return (
         <>
-            <Navbar />
-            <AdminHeader />
-            <div className="flex h-screen bg-gray-100 pl-[220px]">
+            <div className="flex w-full h-full">
                 {/* Main Content */}
-                <div className="flex-1 p-10">
+                <div className="flex-1 relative">
                     {/* Register Title */}
-                    <h2 className="text-[30px] font-bold mb-2">Register</h2>
+                    <div className="mb-9">
+                        <h2 className="text-[30px] font-bold">Register</h2>
+                        <p className="text-[12px] text-gray-700">We're thrilled to have you here!</p>
+                    </div>
 
                     {/* Doctor Registration Form */}
-                    <h3 className="text-[24px] font-bold">Doctor Registration</h3>
-                    <p className="text-[12px] text-gray-700">We're thrilled to have you here!</p>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-lg w-[1000px] mt-5">
-                        {/* First Name & Second Name in one row */}
+                    <h3 className="text-[20px] font-bold">Doctor Registration</h3>
+                    
+                    <div className="w-full h-[400px] bg-white p-6 rounded-2xl shadow-lg mt-8">
+                        <div className="flex flex-col justify-center gap-5 p-2 w-full h-full">
+                                {/* First Name & Second Name in one row */}
                         <div className="flex gap-5 mb-4">
                             <div className="flex items-center w-1/2">
-                                <label className="w-32 text-sm">Contact No:</label>
+                                {/* <label className="w-32 text-sm">Contact No:</label> */}
                                 <input
                                     type="tel"
                                     placeholder="077-#######"
-                                    className="w-full p-2 h-14 border border-gray-300 rounded-md text-sm"
+                                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
                                 />
                             </div>
                             <div className="flex items-center w-1/2">
-                                <label className="w-32 text-sm">Date of Birth:</label>
+                                {/* <label className="w-32 text-sm">Date of Birth:</label> */}
                                 <input
                                     type="date"
-                                    className="w-full p-2 h-14 border border-gray-300 rounded-md text-sm"
+                                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
                                 />
                             </div>
                         </div>
 
                         {/* Other Fields */}
                         <div className="flex items-center mb-4">
-                            <label className="w-32 text-sm">Specification</label>
-                            <input
+                            {/* <label className="w-32 text-sm">Specification</label> */}
+                            <textarea
                                 type="text"
-                                placeholder="Type here"
-                                className="w-full p-4 h-20 border border-gray-300 rounded-md text-sm"
+                                placeholder="Type here..."
+                                className="w-full p-2 h-[175px] border border-gray-300 rounded-md text-sm"
                             />
+                        </div>
                         </div>
                     </div>
 
                     {/* Button Container (Left and Right-Aligned) */}
-                    <div className="flex justify-between mt-30 px-6">
+                    <div className="flex justify-between w-full absolute right-0 bottom-6">
                         <button
-                            className="w-[200px] h-[46px] bg-gray-600 text-white rounded-full text-lg outline-none focus:outline-none cursor-pointer hover:bg-gray-700"
+                            className="w-[125px] h-[35px] bg-gray-600 text-white rounded-full text-md outline-none focus:outline-none cursor-pointer hover:bg-gray-700"
                             onClick={handlePrevious}
                         >
                             Previous
@@ -77,7 +79,7 @@ function DoAdmin2() {
 
                         <button
                             ref={nextButtonRef}
-                            className="w-[200px] h-[46px] bg-blue-900 text-white rounded-full text-lg outline-none focus:outline-none cursor-pointer"
+                            className=" w-[125px] h-[35px] bg-[#1330BE] hover:bg-[#003366] transition duration-200 text-white rounded-full text-md focus:outline-none cursor-pointer mr-0"
                             onClick={handleNext}
                         >
                             Submit
