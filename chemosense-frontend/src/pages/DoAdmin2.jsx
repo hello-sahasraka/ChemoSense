@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../components/AdminHeader";
@@ -6,6 +6,12 @@ import AdminHeader from "../components/AdminHeader";
 function DoAdmin2() {
     const nextButtonRef = useRef(null);
     const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        contactNo: "",
+        dob: "",
+        specification: ""
+    });
 
     useEffect(() => {
         if (nextButtonRef.current) {
@@ -18,8 +24,49 @@ function DoAdmin2() {
     };
 
     const handleNext = () => {
-        navigate("/DoAdmin3"); // Ensure DoAdmin3 exists
+        if (validateForm()) {
+            navigate("/DoAdmin3"); // Ensure DoAdmin3 exists
+        }
     };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        const missingFields = [];
+
+        if (!formData.contactNo.trim()) {
+            newErrors.contactNo = "Contact number is required.";
+            missingFields.push("Contact Number");
+        }
+
+        if (!formData.dob.trim()) {
+            newErrors.dob = "Date of birth is required.";
+            missingFields.push("Date of Birth");
+        }
+
+        if (!formData.specification.trim()) {
+            newErrors.specification = "Specification is required.";
+            missingFields.push("Specification");
+        }
+
+        setErrors(newErrors);
+
+        if (missingFields.length > 0) {
+            alert(`Please fill in the following fields:\n- ${missingFields.join("\n- ")}`);
+            return false;
+        }
+
+        return true;
+    };
+
+
 
     return (
         <>
@@ -34,37 +81,46 @@ function DoAdmin2() {
 
                     {/* Doctor Registration Form */}
                     <h3 className="text-[20px] font-bold">Doctor Registration</h3>
-                    
+
                     <div className="w-full h-[400px] bg-white p-6 rounded-2xl shadow-lg mt-8">
                         <div className="flex flex-col justify-center gap-5 p-2 w-full h-full">
-                                {/* First Name & Second Name in one row */}
-                        <div className="flex gap-5 mb-4">
-                            <div className="flex items-center w-1/2">
-                                {/* <label className="w-32 text-sm">Contact No:</label> */}
-                                <input
-                                    type="tel"
-                                    placeholder="077-#######"
-                                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                                />
+                            {/* First Name & Second Name in one row */}
+                            <div className="flex gap-5 mb-4">
+                                <div className="flex items-center w-1/2">
+                                    {/* <label className="w-32 text-sm">Contact No:</label> */}
+                                    <input
+                                        type="tel"
+                                        placeholder="077-#######"
+                                        name="contactNo"
+                                        value={formData.contactNo}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                                    />
+                                </div>
+                                <div className="flex items-center w-1/2">
+                                    {/* <label className="w-32 text-sm">Date of Birth:</label> */}
+                                    <input
+                                        type="date"
+                                        name="dob"
+                                        value={formData.dob}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                                    />
+                                </div>
                             </div>
-                            <div className="flex items-center w-1/2">
-                                {/* <label className="w-32 text-sm">Date of Birth:</label> */}
-                                <input
-                                    type="date"
-                                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                                />
-                            </div>
-                        </div>
 
-                        {/* Other Fields */}
-                        <div className="flex items-center mb-4">
-                            {/* <label className="w-32 text-sm">Specification</label> */}
-                            <textarea
-                                type="text"
-                                placeholder="Type here..."
-                                className="w-full p-2 h-[175px] border border-gray-300 rounded-md text-sm"
-                            />
-                        </div>
+                            {/* Other Fields */}
+                            <div className="flex items-center mb-4">
+                                {/* <label className="w-32 text-sm">Specification</label> */}
+                                <textarea
+                                    type="text"
+                                    name="specification"
+                                    value={formData.specification}
+                                    onChange={handleChange}
+                                    placeholder="Type here..."
+                                    className="w-full p-2 h-[175px] border border-gray-300 rounded-md text-sm"
+                                />
+                            </div>
                         </div>
                     </div>
 

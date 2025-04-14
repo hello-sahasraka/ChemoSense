@@ -16,8 +16,59 @@ function DoAdmin1() {
         }
     }, []);
 
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        const missingFields = [];
+
+        if (!formData.firstName.trim()) {
+            newErrors.firstName = "First name is required.";
+            missingFields.push("First Name");
+        }
+        if (!formData.secondName.trim()) {
+            newErrors.secondName = "Second name is required.";
+            missingFields.push("Second Name");
+        }
+        if (!formData.mbbsNo.trim()) {
+            newErrors.mbbsNo = "MBBS No is required.";
+            missingFields.push("MBBS No");
+        }
+        if (!formData.doctorId.trim()) {
+            newErrors.doctorId = "Doctor ID is required.";
+            missingFields.push("Doctor ID");
+        }
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required.";
+            missingFields.push("Email");
+        }
+        if (wards.length === 0) {
+            newErrors.wards = "At least one ward is required.";
+            missingFields.push("Ward");
+        }
+
+        setErrors(newErrors);
+
+        if (missingFields.length > 0) {
+            alert(`Please fill in the following fields:\n- ${missingFields.join("\n- ")}`);
+            return false;
+        }
+
+        return true;
+    };
+
+
     const handleNext = () => {
-        navigate("/admin/DoAdmin2");
+        if (validateForm()) {
+            navigate("/admin/DoAdmin2");
+        }
     };
 
     const handleFormChange = (e) => {
@@ -39,6 +90,17 @@ function DoAdmin1() {
             setNewWard(""); // Clear input after adding
         }
     };
+
+    const [formData, setFormData] = useState({
+        firstName: "",
+        secondName: "",
+        mbbsNo: "",
+        doctorId: "",
+        email: "",
+    });
+
+    const [errors, setErrors] = useState({});
+
 
     return (
         <>
@@ -67,7 +129,7 @@ function DoAdmin1() {
 
                     </div>
 
-                    
+
 
                     {formType === "doctor" && (
                         <div className="bg-white p-6 rounded-2xl shadow-lg w-ful h-[400px] mt-8">
@@ -76,16 +138,22 @@ function DoAdmin1() {
                                     <div className="flex items-center w-1/2">
                                         {/* <label className="w-32 text-sm">First Name:</label> */}
                                         <input
+                                            name="firstName"
                                             type="text"
                                             placeholder="First Name"
+                                            value={formData.firstName}
+                                            onChange={handleChange}
                                             className="w-full p-2 border border-gray-300 rounded-md text-sm"
                                         />
                                     </div>
                                     <div className="flex items-center w-1/2">
                                         {/* <label className="w-32 text-sm">Second Name:</label> */}
                                         <input
+                                            name="secondName"
                                             type="text"
                                             placeholder="Second Name"
+                                            value={formData.secondName}
+                                            onChange={handleChange}
                                             className="w-full p-2 border border-gray-300 rounded-md text-sm"
                                         />
                                     </div>
@@ -93,15 +161,18 @@ function DoAdmin1() {
 
                                 <div className="flex items-center mb-4">
                                     {/* <label className="w-32 text-sm">MBBS No:</label> */}
-                                    <input type="text" placeholder="MBBS No" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input name="mbbsNo" type="text" value={formData.mbbsNo}
+                                        onChange={handleChange} placeholder="MBBS No" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                                 <div className="flex items-center mb-4">
                                     {/* <label className="w-32 text-sm">Doctor ID:</label> */}
-                                    <input type="text" placeholder="Doctor ID" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input name="doctorId" type="text" value={formData.doctorId}
+                                        onChange={handleChange} placeholder="Doctor ID" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                                 <div className="flex items-center mb-4">
                                     {/* <label className="w-32 text-sm">E-Mail:</label> */}
-                                    <input type="email" placeholder="E-mail" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input name="email" type="email" value={formData.email}
+                                        onChange={handleChange} placeholder="E-mail" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
 
 
