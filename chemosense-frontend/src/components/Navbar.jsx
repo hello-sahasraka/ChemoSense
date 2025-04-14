@@ -23,7 +23,7 @@ const Navbar = () => {
                 {/* Edit Link */}
                 <li className="flex items-center p-3 text-sm cursor-pointer rounded-lg transition duration-300 hover:bg-[#003366]">
                     <FaEdit className="mr-3 text-lg" />
-                    Edit
+                    <Link to="/admin/edit">Edit</Link>
                 </li>
             </ul>
 

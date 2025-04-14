@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import AdminHeader from "../components/AdminHeader";
+import DocPatDropDown from "../components/DocPatDropDown";
 
 function DoAdmin1() {
     const [formType, setFormType] = useState("doctor"); // "doctor" or "patient"
@@ -128,8 +129,7 @@ function DoAdmin1() {
                         </div>
 
                     </div>
-
-
+ 
 
                     {formType === "doctor" && (
                         <div className="bg-white p-6 rounded-2xl shadow-lg w-ful h-[400px] mt-8">

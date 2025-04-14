@@ -5,7 +5,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#ECECEC] p-4">
+    <div className="flex items-center justify-center min-w-full min-h-screen bg-[#ECECEC] p-4 border-2">
       <div className="w-full max-w-5xl h-auto lg:h-[80vh] bg-[#FFFEF9] drop-shadow-[0_0_10px_rgba(0,0,0,0.40)] rounded-4xl flex flex-col lg:flex-row overflow-hidden">
         {/* Left Side - Login Form */}
         <div className="w-full lg:w-1/2 p-20 flex flex-col relative lg:left-4.5 justify-top">
