@@ -1,5 +1,6 @@
 import React from "react";
 import { IoPersonCircleOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 
 const AdminHeader = () => {
@@ -19,7 +20,7 @@ const AdminHeader = () => {
 
             {/* Logout Button */}
             <button className="bg-[#1330BE] text-white border-none px-4 py-2 text-xs font-bold rounded-full cursor-pointer transition duration-300 hover:bg-[#003366]">
-                LogOut
+                <Link to="/">LogOut</Link>
             </button>
 
             </div>
