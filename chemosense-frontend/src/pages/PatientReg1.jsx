@@ -7,8 +7,73 @@ function PatientReg1() {
     const [formType, setFormType] = useState("patient"); // Default to Patient Registration
     const navigate = useNavigate();
 
+
+    const [formData, setFormData] = useState({
+        fullName: "",
+        nic: "",
+        dob: "",
+        age: "",
+        contactNumber: "",
+        email: "",
+    });
+
+
+    const [errors, setErrors] = useState({});
+
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        const missingFields = [];
+
+        if (!formData.fullName.trim()) {
+            newErrors.fullName = "Full name is required.";
+            missingFields.push("Full Name");
+        }
+        if (!formData.nic.trim()) {
+            newErrors.nic = "NIC number is required.";
+            missingFields.push("NIC");
+        }
+        if (!formData.dob.trim()) {
+            newErrors.dob = "Date of birth is required.";
+            missingFields.push("Date of Birth");
+        }
+        if (!formData.age.trim()) {
+            newErrors.age = "Age is required.";
+            missingFields.push("Age");
+        }
+        if (!formData.contactNumber.trim()) {
+            newErrors.contactNumber = "Contact number is required.";
+            missingFields.push("Contact Number");
+        }
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required.";
+            missingFields.push("Email");
+        }
+
+        setErrors(newErrors);
+
+        if (missingFields.length > 0) {
+            alert(`Please fill in the following fields:\n- ${missingFields.join("\n- ")}`);
+            return false;
+        }
+
+        return true;
+    };
+
+
+
     const handleNext = () => {
-        navigate("/admin/patientreg2");
+        if (validateForm()) {
+            navigate("/admin/patientreg2");
+        }
     };
 
     const handleDropdownChange = (e) => {
@@ -56,22 +121,30 @@ function PatientReg1() {
                             <div className="flex gap-5 mb-4">
                                 <div className="flex items-center w-1/2">
                                     {/* <label className="w-40 text-sm whitespace-nowrap">Full Name:</label> */}
-                                    <input type="text" placeholder="Enter full name" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input type="text" name="fullName"
+                                        value={formData.fullName}
+                                        onChange={handleInputChange} placeholder="Enter full name" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                                 <div className="flex items-center w-1/2">
                                     {/* <label className="w-40 text-sm whitespace-nowrap">NIC Number:</label> */}
-                                    <input type="text" placeholder="Enter NIC number" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input type="text" name="nic"
+                                        value={formData.nic}
+                                        onChange={handleInputChange} placeholder="Enter NIC number" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                             </div>
 
                             <div className="flex gap-5 mb-4">
                                 <div className="flex items-center w-1/2">
                                     {/* <label className="w-40 text-sm whitespace-nowrap">Date of Birth:</label> */}
-                                    <input type="date" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input type="date" name="dob"
+                                        value={formData.dob}
+                                        onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                                 <div className="flex items-center w-1/2">
                                     {/* <label className="w-40 text-sm whitespace-nowrap">Age:</label> */}
-                                    <input type="number" placeholder="Enter age" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input type="number" name="age"
+                                        value={formData.age}
+                                        onChange={handleInputChange} placeholder="Enter age" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                             </div>
 
@@ -94,11 +167,15 @@ function PatientReg1() {
                             <div className="flex gap-5 mb-4">
                                 <div className="flex items-center w-1/2">
                                     {/* <label className="w-40 text-sm whitespace-nowrap">Contact Number:</label> */}
-                                    <input type="tel" placeholder="Enter contact number" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input type="tel" name="contactNumber"
+                                        value={formData.contactNumber}
+                                        onChange={handleInputChange} placeholder="Enter contact number" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                                 <div className="flex items-center w-1/2">
                                     {/* <label className="w-40 text-sm whitespace-nowrap">Email:</label> */}
-                                    <input type="email" placeholder="Enter email" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
+                                    <input type="email" name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange} placeholder="Enter email" className="w-full p-2 border border-gray-300 rounded-md text-sm" />
                                 </div>
                             </div>
 
