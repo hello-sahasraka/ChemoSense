@@ -9,16 +9,18 @@ function PatientReg2() {
   const previousFormData = location.state || {}; // fallback if no state passed
 
   const [formData, setFormData] = useState({
-    cancerType: "",
-    diagnosisDate: "",
-    admissionNo: "",
-    wardNo: "",
+    cancerType: location.state?.cancerType || "",
+    diagnosisDate: location.state?.diagnosisDate || "",
+    admissionNo: location.state?.admissionNo || "",
+    wardNo: location.state?.wardNo || "",
   });
 
   const [errors, setErrors] = useState({});
 
   const handlePrevious = () => {
-    navigate("/admin/patientreg1", { state: previousFormData });
+    navigate("/admin/patientreg1", {
+      state: { ...previousFormData, ...formData },
+    });
   };
 
   const handleSubmit = () => {
@@ -28,7 +30,7 @@ function PatientReg2() {
         ...formData,
       };
 
-      console.log("Final Combined Form Data: ", finalData);
+      console.log("Patient Combined Form Data: ", finalData);
       // Submit `finalData` to your backend or display it
       // navigate("/success") or show confirmation
     }

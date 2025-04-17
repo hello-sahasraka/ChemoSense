@@ -30,13 +30,13 @@ function DoAdmin1() {
     const newErrors = {};
     const missingFields = [];
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required.";
-      missingFields.push("First Name");
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "First name is required.";
+      missingFields.push("Full Name");
     }
-    if (!formData.secondName.trim()) {
-      newErrors.secondName = "Second name is required.";
-      missingFields.push("Second Name");
+    if (!formData.nic.trim()) {
+      newErrors.nic = "Second name is required.";
+      missingFields.push("NIC Number");
     }
     if (!formData.mbbsNo.trim()) {
       newErrors.mbbsNo = "MBBS No is required.";
@@ -98,11 +98,15 @@ function DoAdmin1() {
   };
 
   const [formData, setFormData] = useState({
-    firstName: location.state?.firstName || "",
-    secondName: location.state?.secondName || "",
-    mbbsNo: location.state?.mbbsNo || "",
-    doctorId: location.state?.doctorId || "",
-    email: location.state?.email || "",
+    fullName: "",
+    nic: "",
+    mbbsNo: "",
+    doctorId: "",
+    email: "",
+    contactNo: "",
+    dob: "",
+    specification: "",
+    ...(location.state || {}), // If location.state exists, merge everything passed from DoAdmin2
   });
 
   const [errors, setErrors] = useState({});
@@ -120,11 +124,11 @@ function DoAdmin1() {
 
           <div className="flex items-center gap-8">
             <h3 className="text-[20px] font-bold">Doctor Registration</h3>
-            <div className="relative w-[200px]">
+            <div className="relative w-[125px]">
               <select
                 className="py-2 px-3 w-full rounded-md text-sm bg-red-600 text-white border-none focus:outline-none 
-                                            focus:ring-2 focus:ring-red-400 transition-all duration-200 appearance-none 
-                                            cursor-pointer hover:bg-red-700"
+                           focus:ring-1 focus:ring-red-400 transition-all duration-200 appearance-none 
+                           cursor-pointer hover:bg-red-700 shadow-red-500 shadow-[0_0_3px_rgba(251,44,54,0.20)]"
                 value={formType}
                 onChange={handleFormChange}
               >
@@ -132,13 +136,13 @@ function DoAdmin1() {
                   value="doctor"
                   className="text-black bg-white hover:bg-blue-500 transition-all duration-200 cursor-pointer font-semibold"
                 >
-                  Doctor Registration
+                  Doctor
                 </option>
                 <option
                   value="patient"
                   className="text-black bg-white hover:bg-blue-500 transition-all duration-200 cursor-pointer font-semibold"
                 >
-                  Patient Registration
+                  Patient
                 </option>
               </select>
               <span className="absolute inset-y-3 right-6 flex items-center pointer-events-none text-white">
@@ -154,10 +158,10 @@ function DoAdmin1() {
                   <div className="flex items-center w-1/2">
                     {/* <label className="w-32 text-sm">First Name:</label> */}
                     <input
-                      name="firstName"
+                      name="fullName"
                       type="text"
-                      placeholder="First Name"
-                      value={formData.firstName}
+                      placeholder="Full Name"
+                      value={formData.fullName}
                       onChange={handleChange}
                       className="w-full p-2 border border-gray-300 rounded-md text-sm"
                     />
@@ -165,10 +169,10 @@ function DoAdmin1() {
                   <div className="flex items-center w-1/2">
                     {/* <label className="w-32 text-sm">Second Name:</label> */}
                     <input
-                      name="secondName"
+                      name="nic"
                       type="text"
-                      placeholder="Second Name"
-                      value={formData.secondName}
+                      placeholder="NIC Number"
+                      value={formData.nic}
                       onChange={handleChange}
                       className="w-full p-2 border border-gray-300 rounded-md text-sm"
                     />
