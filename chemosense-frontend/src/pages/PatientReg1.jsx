@@ -10,15 +10,20 @@ function PatientReg1() {
   const location = useLocation();
 
   const [formData, setFormData] = useState({
-    fullName: location.state?.fullName || "",
-    nic: location.state?.nic || "",
-    dob: location.state?.dob || "",
-    age: location.state?.age || "",
-    bloodType: location.state?.bloodType || "",
-    gender: location.state?.gender || "",
-    contactNumber: location.state?.contactNumber || "",
-    email: location.state?.email || "",
-    permanentAddress: location.state?.permanentAddress || "",
+    fullName: "",
+    nic: "",
+    dob: "",
+    age: "",
+    bloodType: "",
+    gender: "",
+    contactNumber: "",
+    email: "",
+    permanentAddress: "",
+    cancerType: "",
+    diagnosisDate: "",
+    admissionNo: "",
+    wardNo: "",
+    ...(location.state || {}), // This Merges any previously passed data
   });
 
   const [errors, setErrors] = useState({});
@@ -117,19 +122,19 @@ function PatientReg1() {
                 ? "Doctor Registration"
                 : "Patient Registration"}
             </h3>
-            <div className="relative w-[200px]">
+            <div className="relative w-[125px]">
               <select
                 className="py-2 px-3 w-full rounded-md text-sm bg-red-600 text-white border-none focus:outline-none 
-                                            focus:ring-2 focus:ring-red-400 transition-all duration-200 appearance-none 
-                                            cursor-pointer hover:bg-red-700"
+                           focus:ring-1 focus:ring-red-400 transition-all duration-200 appearance-none 
+                           cursor-pointer hover:bg-red-700 shadow-red-500 shadow-[0_0_3px_rgba(251,44,54,0.20)]"
                 value={formType}
                 onChange={handleDropdownChange} // Call the function here
               >
                 <option value="doctor" className="text-black bg-white">
-                  Doctor Registration
+                  Doctor
                 </option>
                 <option value="patient" className="text-black bg-white">
-                  Patient Registration
+                  Patient
                 </option>
               </select>
               <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-white pr-3">
@@ -175,6 +180,7 @@ function PatientReg1() {
                   <input
                     type="date"
                     name="dob"
+                    placeholder="Enter date of birth"
                     value={formData.dob}
                     onChange={handleInputChange}
                     className="w-full p-2 border border-gray-300 rounded-md text-sm"

@@ -10,9 +10,9 @@ function DoAdmin2() {
   const previousFormData = location.state;
 
   const [formData, setFormData] = useState({
-    contactNo: "",
-    dob: "",
-    specification: "",
+    contactNo: location.state?.contactNo || "",
+    dob: location.state?.dob || "",
+    specification: location.state?.specification || "",
   });
 
   const [errors, setErrors] = useState({});
@@ -24,7 +24,9 @@ function DoAdmin2() {
   }, []);
 
   const handlePrevious = () => {
-    navigate("/admin/DoAdmin1", { state: previousFormData });
+    navigate("/admin/DoAdmin1", {
+      state: { ...previousFormData, ...formData },
+    });
   };
 
   const handleSubmit = () => {
@@ -34,7 +36,7 @@ function DoAdmin2() {
         ...formData,
       };
 
-      console.log("Final Combined Form Data: ", finalData);
+      console.log("Doctor Combined Form Data: ", finalData);
       // Submit `finalData` to your backend or display it
       // navigate("/success") or show confirmation
     }
