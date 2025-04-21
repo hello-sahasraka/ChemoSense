@@ -17,6 +17,7 @@ const DATA_LIST = [
     {"name": "Dr. Nimal Perera","doctor_id": "0008","mbbs_no": "MBBS/SL/2021/008","contact_no": "+94 711167160"},
     {"name": "Dr. Chamari Fernando","doctor_id": "0009","mbbs_no": "MBBS/SL/2021/009","contact_no": "+94 711167161"},
     {"name": "Dr. Tharindu Jayasinghe","doctor_id": "0010","mbbs_no": "MBBS/SL/2021/010","contact_no": "+94 711167162"} ]
+    
 
 const AdminEditDoctor = () => {
   const [searchTerm, setSearchTerm] = useState('');
