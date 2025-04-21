@@ -28,10 +28,10 @@ const Navbar = () => {
             </ul>
 
             {/* Settings (Pushes to bottom) */}
-            <div className="mt-auto p-3 text-sm cursor-pointer flex items-center rounded-lg transition duration-300 hover:bg-[#003366]">
-                <FaCog className="mr-3 text-lg" />
-                Settings
-            </div>
+
+            <Link to="/admin/settings" 
+            className="mt-auto p-3 text-sm cursor-pointer flex items-center rounded-lg transition duration-300 hover:bg-[#003366]"> <FaCog className="mr-3 text-lg" />Settings</Link>
+            
         </nav>
     );
 };

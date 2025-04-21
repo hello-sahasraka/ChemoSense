@@ -11,6 +11,13 @@ import AdminEditDoctor from "./pages/Admin/AdminEditDoctor";
 import AdminEditPatient from "./pages/Admin/AdminEditPatient";
 import AdminEditSingleDoc from "./pages/Admin/AdminEditSingleDoc";
 import AdminEditSinglePat from "./pages/Admin/AdminEditSinglePat";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import PatientDetails from "./pages/Doctor/PatientDetails";
+import DocDetailsSinglePat from "./pages/Doctor/DocDetailsSinglePat";
+import DocSettings from "./pages/Doctor/DocSettings";
+import SubHeader from "./components/Doctor/SubHeader";
+import AdminSettings from "./pages/Admin/AdminSettings";
+import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
 
 
 
@@ -39,6 +46,21 @@ function App() {
               <Route path="doctorlist/:id" element={<AdminEditSingleDoc />} />
               <Route path="patientlist/:id" element={<AdminEditSinglePat />} />
             </Route>
+
+            {/* Admin Settings */}
+            <Route path="settings" element={<AdminSettings />}>
+              <Route index element={<AdminSettingsDetails />} />
+              <Route path="details" element={<AdminSettingsDetails />} />
+            </Route>
+
+          </Route>
+
+          <Route path="/doctor" element={<DoctorDashboard />}>
+            <Route index element={<PatientDetails />} />
+            <Route path="details" element={<PatientDetails />} />
+            <Route path="details/:nic" element={<DocDetailsSinglePat />} />
+            <Route path="notification" element={<h1><SubHeader stype={"Notification"} /> Notification</h1>} />
+            <Route path="settings" element={<DocSettings />} />
           </Route>
           <Route path="*" element={<h1 className="text-[50px] flex justify-center items-center w-full h-screen ">Error 404</h1>} />
         </Routes>
