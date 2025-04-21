@@ -226,6 +226,7 @@ const DocEdit = () => {
             </div>
 
             <div className="flex justify-between items-center mt-10 w-full">
+
                 <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center">
                     Back
                 </button>
@@ -233,8 +234,7 @@ const DocEdit = () => {
                 <div className="flex justify-center">
                     <button
                         onClick={handleSave}
-                        className="w-[150px] h-[35px] bg-green-700 text-white px-6 py-2 rounded-full cursor-pointer shadow-lg flex justify-center items-center"
-                    >
+                        className="w-[150px] h-[35px] bg-green-700 text-white px-6 py-2 rounded-full cursor-pointer shadow-lg flex justify-center items-center">
                         Save changes
                     </button>
                 </div>
