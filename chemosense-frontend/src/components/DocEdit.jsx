@@ -88,20 +88,6 @@ const DocEdit = () => {
     };
 
     const handleSave = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const nicRegex = /^(\d{9}[vVxX]|\d{12})$/;
-    if (!nicRegex.test(formData.nic)) {
-      alert("Invalid NIC number (e.g., 123456789V or 200145674567)");
-      return;
-    }
-
-    if (!emailRegex.test(formData.email)) {
-      alert("Enter a valid email address");
-      return;
-    }
-
-    // Add more validations as needed
-
     console.log("Updated Form Data: ", formData);
     alert("Changes saved!");
     setDisplayData({
