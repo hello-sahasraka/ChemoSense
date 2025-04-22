@@ -88,13 +88,13 @@ const DocEdit = () => {
     };
 
     const handleSave = () => {
-        console.log("Updated Form Data: ", formData);
-        alert("Changes saved!");
-        setDisplayData({
-            name: formData.name,
-            email: formData.email,
-        });
-    };
+    console.log("Updated Form Data: ", formData);
+    alert("Changes saved!");
+    setDisplayData({
+      name: formData.name,
+      email: formData.email,
+    });
+  };
 
     return (
         <>

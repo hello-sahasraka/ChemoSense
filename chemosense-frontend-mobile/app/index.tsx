@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import "../global.css"
 
 // Components
 import Dummy from '../components/Dummy'
