@@ -1,23 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend  } from "recharts";
 
-const BODY_TEMPERATURE_DATA = [
-    { time: 0, temp: 36.7 },
-    { time: 1, temp: 36.8 },
-    { time: 2, temp: 36.9 },
-    { time: 3, temp: 37.0 },
-    { time: 4, temp: 37.2 },
-    { time: 5, temp: 37.5 },
-    { time: 6, temp: 37.6 },
-    { time: 7, temp: 37.8 },
-    { time: 8, temp: 38.0 },
-    { time: 9, temp: 37.9 },
-    { time: 10, temp: 37.6 }
-  ];
-  
-
 const BodyTemperatureChart = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const newPoint = {
+        time: now.getMinutes(),
+        temp: Math.floor(Math.random() * (40 - 33 + 1)) + 33, // simulate random data
+      };
+
+      setData(prevData => {
+        const updatedData = [...prevData, newPoint];
+        return updatedData.slice(-10); // keep only the latest 10 points
+      });
+    }, 5000); // update every 5 sec
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <motion.div
     className="bg-gray-200 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-300"
@@ -32,7 +36,7 @@ const BodyTemperatureChart = () => {
         <div className="h-80">
         <ResponsiveContainer width={"100%"} height={"100%"}>
 
-            <LineChart data={BODY_TEMPERATURE_DATA}>
+            <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
                 <XAxis dataKey={"time"} stroke="#9CA3AF" interval={0} />
                 <YAxis stroke="#9CA3AF" />

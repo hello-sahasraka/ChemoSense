@@ -1,25 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend  } from "recharts";
 
-const HEART_RATE_DATA = [
-    { time: 0, bpm: 78 },
-    { time: 1, bpm: 80 },
-    { time: 2, bpm: 79 },
-    { time: 3, bpm: 81 },
-    { time: 4, bpm: 83 },
-    { time: 5, bpm: 85 },
-    { time: 6, bpm: 84 },
-    { time: 7, bpm: 82 },
-    { time: 8, bpm: 81 },
-    { time: 9, bpm: 80 },
-    { time: 10, bpm: 79 },
-    { time: 11, bpm: 78 },
-    { time: 12, bpm: 80 },
-  ];
-  
-
 const HeartRateChart = () => {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const newPoint = {
+        time: now.getSeconds(), 
+        bpm: Math.floor(Math.random() * (90 - 75 + 1)) + 75, // simulate random data
+      };
+
+      setData(prevData => {
+        const updatedData = [...prevData, newPoint];
+        return updatedData.slice(-10); // keep only the latest 10 points
+      });
+    }, 1000); // update every second
+
+    return () => clearInterval(interval); // cleanup on unmount
+  }, []);
+
   return (
     <motion.div
     className="bg-gray-200 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-300"
@@ -34,7 +37,7 @@ const HeartRateChart = () => {
             <div className="h-80">
             <ResponsiveContainer width={"100%"} height={"100%"}>
 
-                <LineChart data={HEART_RATE_DATA}>
+                <LineChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
                     <XAxis dataKey={"time"} stroke="#9CA3AF" interval={0} />
                     <YAxis stroke="#9CA3AF" />
