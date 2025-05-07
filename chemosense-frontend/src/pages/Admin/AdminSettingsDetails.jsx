@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUserCircle, FaEdit, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const AdminSettingsDetails = () => {
+  const navigate = useNavigate();
   const initial = {
     firstName: "Kane",
     lastName: "Williamson",
@@ -29,12 +31,28 @@ const AdminSettingsDetails = () => {
   const handleSave = () => {
     console.log("Saved:", form);
     alert("Profile updated!");
+
+    // Simulate OTP generation
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    console.log("Sending OTP to:", form.email, "OTP:", otp);
+
+    // TODO: Send OTP to backend for email delivery
+    // fetch("/api/send-otp", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ email: form.email, otp }),
+    // });
+
+    // Reset fields editable state
     setEditable({
       firstName: false,
       lastName: false,
       email: false,
       nic: false,
     });
+
+    // Redirect to OTP page
+    navigate("/admin/settings/otp");
   };
 
   return (

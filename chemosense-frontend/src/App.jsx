@@ -18,9 +18,7 @@ import DocSettings from "./pages/Doctor/DocSettings";
 import SubHeader from "./components/Doctor/SubHeader";
 import AdminSettings from "./pages/Admin/AdminSettings";
 import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
-
-
-
+import Otp from "./pages/Admin/Otp";
 
 function App() {
   return (
@@ -29,14 +27,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/admin" element={<AdminDashboard />}>
-
             {/* Admin User Resgistration */}
             <Route index element={<DoAdmin1 />} />
             <Route path="DoAdmin1" element={<DoAdmin1 />} />
             <Route path="DoAdmin2" element={<DoAdmin2 />} />
             <Route path="patientreg1" element={<PatientReg1 />} />
             <Route path="patientreg2" element={<PatientReg2 />} />
-
 
             {/* Admin Edit */}
             <Route path="edit" element={<AdminEdit />}>
@@ -51,18 +47,32 @@ function App() {
             <Route path="settings" element={<AdminSettings />}>
               <Route index element={<AdminSettingsDetails />} />
               <Route path="details" element={<AdminSettingsDetails />} />
+              <Route path="otp" element={<Otp />} />
             </Route>
-
           </Route>
 
           <Route path="/doctor" element={<DoctorDashboard />}>
             <Route index element={<PatientDetails />} />
             <Route path="details" element={<PatientDetails />} />
             <Route path="details/:nic" element={<DocDetailsSinglePat />} />
-            <Route path="notification" element={<h1><SubHeader stype={"Notification"} /> Notification</h1>} />
+            <Route
+              path="notification"
+              element={
+                <h1>
+                  <SubHeader stype={"Notification"} /> Notification
+                </h1>
+              }
+            />
             <Route path="settings" element={<DocSettings />} />
           </Route>
-          <Route path="*" element={<h1 className="text-[50px] flex justify-center items-center w-full h-screen ">Error 404</h1>} />
+          <Route
+            path="*"
+            element={
+              <h1 className="text-[50px] flex justify-center items-center w-full h-screen ">
+                Error 404
+              </h1>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </div>
