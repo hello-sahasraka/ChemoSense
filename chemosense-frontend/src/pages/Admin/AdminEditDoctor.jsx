@@ -1,34 +1,45 @@
-import React, { useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 // import TableList from '../../components/TableList'
 import { IoSearch, IoPersonCircleOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { BiSolidEdit } from "react-icons/bi";
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-
-const DATA_LIST = [
-    {"name": "Dr. John Doe","doctor_id": "0001","mbbs_no": "MBBS/SL/2021/001","contact_no": "+94 711167153"},
-    {"name": "Dr. Jane Smith","doctor_id": "0002","mbbs_no": "MBBS/SL/2021/002","contact_no": "+94 711167154"},
-    {"name": "Dr. Alan Brown","doctor_id": "0003","mbbs_no": "MBBS/SL/2021/003","contact_no": "+94 711167155"},
-    {"name": "Dr. Emily Clark","doctor_id": "0004","mbbs_no": "MBBS/SL/2021/004","contact_no": "+94 711167156"},
-    {"name": "Dr. Michael Lee","doctor_id": "0005","mbbs_no": "MBBS/SL/2021/005","contact_no": "+94 711167157"},
-    {"name": "Dr. Sarah Kim","doctor_id": "0006","mbbs_no": "MBBS/SL/2021/006","contact_no": "+94 711167158"},
-    {"name": "Dr. David Silva","doctor_id": "0007","mbbs_no": "MBBS/SL/2021/007","contact_no": "+94 711167159"},
-    {"name": "Dr. Nimal Perera","doctor_id": "0008","mbbs_no": "MBBS/SL/2021/008","contact_no": "+94 711167160"},
-    {"name": "Dr. Chamari Fernando","doctor_id": "0009","mbbs_no": "MBBS/SL/2021/009","contact_no": "+94 711167161"},
-    {"name": "Dr. Tharindu Jayasinghe","doctor_id": "0010","mbbs_no": "MBBS/SL/2021/010","contact_no": "+94 711167162"} ]
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../config/firebase";
     
 
 const AdminEditDoctor = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState(DATA_LIST);
+  const [doctors, setDoctors] = useState([]);
+  const [filteredData, setFilteredData] = useState(doctors);
   const navigate = useNavigate();
+
+  const getDoctorList = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "doctors"));
+      const doctorsArray = [];
+      querySnapshot.forEach((doc) => {
+        doctorsArray.push({...doc.data()}); // include doc id if needed
+      });
+      setDoctors(doctorsArray);
+      setFilteredData(doctorsArray)
+       // set them all at once (efficient)
+      console.log("Doctors fetched:", doctorsArray); // this will show correct list
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  }
+
+  useEffect(() => {
+    getDoctorList(); 
+  }, [])
 
 
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    const filtered = DATA_LIST.filter(data=> data.name.toLowerCase().includes(term) || data.doctor_id.toLowerCase().includes(term));
+    const filtered = doctors.filter(data=> data.fullName.toLowerCase().includes(term) || data.doctorId.toLowerCase().includes(term));
     setFilteredData(filtered);
   };
 
@@ -80,11 +91,11 @@ const AdminEditDoctor = () => {
                         >
                           <td className='px-6 py-3 whitespace-nowrap text-sm font-semibold text-gray-500 flex gap-2 items-center'>
                                     <IoPersonCircleOutline size={30} />
-                                    {data.name}
+                                    {data.fullName}
                           </td>
-                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>#{data.doctor_id}</td>
-                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.mbbs_no}</td>
-                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.contact_no}</td>
+                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>#{data.doctorId}</td>
+                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.mbbsNo}</td>
+                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.contactNo}</td>
                           <td className='px-6 py-3 whitespace-nowrap'>
                             <button className='text-indigo-600 hover:text-indigo-400 mr-2 cursor-pointer'
                             onClick={() => handleEdit(data.doctor_id)}

@@ -18,6 +18,7 @@ import DocSettings from "./pages/Doctor/DocSettings";
 import SubHeader from "./components/Doctor/SubHeader";
 import AdminSettings from "./pages/Admin/AdminSettings";
 import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
+import { Toaster } from "react-hot-toast";
 
 
 
@@ -26,6 +27,7 @@ function App() {
   return (
     <div className="flex h-screen overflow-hidden">
       <BrowserRouter>
+      <Toaster position="top-center" />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/admin" element={<AdminDashboard />}>

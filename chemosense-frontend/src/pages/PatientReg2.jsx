@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import AdminHeader from "../components/AdminHeader";
+// import AdminHeader from "../components/AdminHeader";
 import { useNavigate, useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
+// import Navbar from "../components/Navbar";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import toast from "react-hot-toast";
 
 function PatientReg2() {
   const navigate = useNavigate();
@@ -23,16 +26,28 @@ function PatientReg2() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    toast.loading("Submitting...");
     if (validateForm()) {
       const finalData = {
         ...previousFormData,
         ...formData,
+        role: "patient",
+
       };
 
       console.log("Patient Combined Form Data: ", finalData);
-      // Submit `finalData` to your backend or display it
-      // navigate("/success") or show confirmation
+    
+      try {
+        const docRef = await addDoc(collection(db, "patients"), finalData);
+        console.log("Document written with ID:", docRef.id);
+        toast.dismiss();
+        toast.success("patient registered successfully!");
+      } catch (error) {
+        console.error("Error adding document:", error);
+        toast.dismiss();
+        toast.error("Something went wrong while submitting. Please try again.");
+      }
     }
   };
 

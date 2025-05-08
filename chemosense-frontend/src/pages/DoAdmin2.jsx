@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import AdminHeader from "../components/AdminHeader";
+import { collection, addDoc } from "firebase/firestore"; 
+import { db } from "../config/firebase";
+import toast from "react-hot-toast";
 
 function DoAdmin2() {
   const nextButtonRef = useRef(null);
@@ -29,18 +32,30 @@ function DoAdmin2() {
     });
   };
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      const finalData = {
-        ...previousFormData,
-        ...formData,
-      };
-
-      console.log("Doctor Combined Form Data: ", finalData);
-      // Submit `finalData` to your backend or display it
-      // navigate("/success") or show confirmation
+  const handleSubmit = async () => {
+    toast.loading("Submitting...");
+    if (!validateForm()) return;
+  
+    const finalData = {
+      ...previousFormData,
+      ...formData,
+      role: "doctor",
+    };
+  
+    console.log("Submitting Doctor Data:", finalData);
+  
+    try {
+      const docRef = await addDoc(collection(db, "doctors"), finalData);
+      console.log("Document written with ID:", docRef.id);
+      toast.dismiss();
+      toast.success("Doctor registered successfully!");
+    } catch (error) {
+      console.error("Error adding document:", error);
+      toast.dismiss();
+      toast.error("Something went wrong while submitting. Please try again.");
     }
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
