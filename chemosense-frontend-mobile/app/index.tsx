@@ -1,17 +1,24 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import "../global.css"
+import "../global.css";
+
+
 
 // Components
-import Dummy from '../components/Dummy'
+
+import PatEditProfile from './Screens/PatEditProfile'
+import Notification from './Screens/Notification';
 
 const index = () => {
   return (
-    <View className='items-center justify-center flex-1 bg-yellow-200'>
-      <Text className='text-2xl font-bold text-blue-500'>Hello!</Text>
-      <Dummy />
+    /* <View className="flex-1">
+       <PatEditProfile />
+     </View>
+     */
+    <View className="flex-1">
+      <PatEditProfile />
     </View>
   )
 }
 
-export default index
+export default index;
