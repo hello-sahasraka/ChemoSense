@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 
 
-const PatHomescreen = () => {// dont change the screen name 
+const PatLogIn = () => {// dont change the screen name 
     return (
         <View>
             <Text>Type your login page here  </Text>
@@ -13,4 +13,4 @@ const PatHomescreen = () => {// dont change the screen name
     )
 }
 
-export default PatHomescreen
+export default PatLogIn
