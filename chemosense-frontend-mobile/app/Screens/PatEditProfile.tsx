@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'react-native';
-
 import { SafeAreaView, TextInput, TouchableOpacity, Image, ScrollView, Alert, View, Text } from 'react-native';
+/*
+import { useEffect } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from './firebaseConfig'; // adjust path accordingly
+*/
 
 type Profile = {
     name: string;
     nic: string;
     phone: string;
     email: string;
-    dob: string;
-    username: string;
+    username: string,
+    password: string,
+    confirmPassword: string,
 };
 
 export default function PatEditProfile() {
@@ -18,16 +23,42 @@ export default function PatEditProfile() {
         nic: '951234567V',
         phone: '+94 771234567',
         email: '',
-        dob: '',
         username: '',
+        password: '',
+        confirmPassword: '',
     });
+
+    //These  information  inside'' need to be remove and '' inside these need to be blank 
 
     const handleChange = (key: keyof Profile, value: string) => {
         setProfile({ ...profile, [key]: value });
     };
 
+
+    /*useEffect(() => {
+    const loadProfile = async () => {
+        try {
+            const userRef = doc(db, 'patients', profile.username);
+            const docSnap = await getDoc(userRef);
+
+            if (docSnap.exists()) {
+                setProfile(docSnap.data() as Profile);
+            } else {
+                console.log('No such profile found.');
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+        }
+    };
+
+    if (profile.username) {
+        loadProfile();
+    }
+}, [profile.username]);
+*/
+
     const validateForm = () => {
-        const { email, phone } = profile;
+        const { email, phone, password, confirmPassword } = profile;
 
         const emailRegex = /\S+@\S+\.\S+/;
         if (!email || !emailRegex.test(email)) {
@@ -41,8 +72,34 @@ export default function PatEditProfile() {
             return false;
         }
 
+        if (!password || password.length < 6) {
+            Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert('Password Mismatch', 'Passwords do not match.');
+            return false;
+        }
+
+
         return true;
     };
+
+    /*const handleSave = async () => {
+        if (validateForm()) {
+            try {
+                const userRef = doc(db, 'patients', profile.username); // use username as document ID
+                await setDoc(userRef, profile); // create or overwrite patient profile
+                Alert.alert('Profile Saved', 'Your profile changes have been saved successfully!');
+                console.log('Saved Profile:', profile); // good for debugging
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                Alert.alert('Error', 'Failed to save profile. Please try again.');
+            }
+        }
+    };
+    */
 
     const handleSave = () => {
         if (validateForm()) {
@@ -72,7 +129,7 @@ export default function PatEditProfile() {
                     <TextInput
                         className="bg-gray-200 p-3 rounded-md mb-4"
                         value={profile.name}
-                        onChangeText={(text) => handleChange('name', text)}
+                        editable={false}
                     />
 
                     {/* NIC */}
@@ -80,7 +137,7 @@ export default function PatEditProfile() {
                     <TextInput
                         className="bg-gray-200 p-3 rounded-md mb-4"
                         value={profile.nic}
-                        onChangeText={(text) => handleChange('nic', text)}
+                        editable={false}
                     />
 
                     {/* Phone */}
@@ -88,7 +145,7 @@ export default function PatEditProfile() {
                     <TextInput
                         className="bg-gray-200 p-3 rounded-md mb-4"
                         value={profile.phone}
-                        onChangeText={(text) => handleChange('phone', text)}
+                        editable={false}
                         keyboardType="phone-pad"
                     />
 
@@ -97,17 +154,8 @@ export default function PatEditProfile() {
                     <TextInput
                         className="bg-gray-200 p-3 rounded-md mb-4"
                         value={profile.email}
-                        onChangeText={(text) => handleChange('email', text)}
+                        editable={false}
                         keyboardType="email-address"
-                    />
-
-                    {/* DOB */}
-                    <Text className="text-sm font-bold text-gray-700 mb-2">Date of Birth</Text>
-                    <TextInput
-                        className="bg-gray-200 p-3 rounded-md mb-4"
-                        value={profile.dob}
-                        onChangeText={(text) => handleChange('dob', text)}
-                        placeholder="YYYY-MM-DD"
                     />
 
                     {/* Username */}
@@ -116,6 +164,24 @@ export default function PatEditProfile() {
                         className="bg-gray-200 p-3 rounded-md mb-4"
                         value={profile.username}
                         onChangeText={(text) => handleChange('username', text)}
+                    />
+
+                    {/* Passwor */}
+                    <Text className="text-sm font-bold text-gray-700 mb-2">Password</Text>
+                    <TextInput
+                        className="bg-gray-200 p-3 rounded-md mb-4"
+                        value={profile.password}
+                        onChangeText={(text) => handleChange('password', text)}
+                        secureTextEntry
+                    />
+
+                    {/*verify password*/}
+                    <Text className="text-sm font-bold text-gray-700 mb-2">Confirm Password</Text>
+                    <TextInput
+                        className="bg-gray-200 p-3 rounded-md mb-4"
+                        value={profile.confirmPassword}
+                        onChangeText={(text) => handleChange('confirmPassword', text)}
+                        secureTextEntry
                     />
 
                     {/* Save Button */}

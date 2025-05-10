@@ -1,24 +1,28 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View } from 'react-native';
+import React, { useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import "../global.css";
 
+// Default screen shown when app loads
+import PatHomeScreen from './Screens/PatHomescreen';
 
+const Index = () => {
+  const router = useRouter();
 
-// Components
+  useEffect(() => {
+    // After 30 seconds, go to PatLogIn screen
+    const timer = setTimeout(() => {
+      router.push('/Screens/PatLogIn');
+    }, 4000); // 30000 milliseconds = 30 seconds
 
-import PatEditProfile from './Screens/PatEditProfile'
-import Notification from './Screens/Notification';
+    return () => clearTimeout(timer); // Clean up timer if component unmounts
+  }, []);
 
-const index = () => {
   return (
-    /* <View className="flex-1">
-       <PatEditProfile />
-     </View>
-     */
-    <View className="flex-1">
-      <PatEditProfile />
+    <View style={{ flex: 1 }}>
+      <PatHomeScreen />
     </View>
-  )
-}
+  );
+};
 
-export default index;
+export default Index;
