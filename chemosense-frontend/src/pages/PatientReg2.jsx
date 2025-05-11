@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import AdminHeader from "../components/AdminHeader";
 import { useNavigate, useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, query, where, getDocs , doc , getDoc, setDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import toast from "react-hot-toast";
+import { p } from "framer-motion/client";
 
 function PatientReg2() {
   const navigate = useNavigate();
@@ -23,16 +26,138 @@ function PatientReg2() {
     });
   };
 
-  const handleSubmit = () => {
+  function generatePassword(length = 10) {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    return password;
+  }
+  
+
+
+  const checkIfEmailExists = async (email) => {
+    const q = query(
+      collection(db, "patients"),
+      where("email", "==", email)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if email exists
+  };
+
+  const checkIfNicExists = async (nic) => {
+    const q = query(
+      collection(db, "patients"),
+      where("nic", "==", nic)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if nic exists
+  };
+  const checkIfContactExists = async (contactNumber) => {
+    const q = query(
+      collection(db, "patients"),
+      where("contactNumber", "==", contactNumber)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if nic exists
+  };
+  const checkIfAdmissionNoExists = async (admissionNo) => {
+    const q = query(
+      collection(db, "patients"),
+      where("admissionNo", "==", admissionNo)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if nic exists
+  };
+
+  const handleSubmit = async () => {
+    toast.loading("Submitting...");
+
+    const password = generatePassword();
+
     if (validateForm()) {
       const finalData = {
         ...previousFormData,
         ...formData,
+        role: "patient",
+        password: password,
+
       };
 
+      
+
       console.log("Patient Combined Form Data: ", finalData);
-      // Submit `finalData` to your backend or display it
-      // navigate("/success") or show confirmation
+
+      try {
+        const email = finalData.email; 
+        const contactNumber= finalData.contactNumber;
+        const admissionNo= finalData.admissionNo;
+        const nic = finalData.nic;
+  
+        // Check if pat already exists
+        // const patSnap = await getDoc(patRef);
+  
+        // if (patSnap.exists()) {
+        //   toast.dismiss();
+        //   toast.error(`Patient ${nic} already exists! Can't register again.`);
+        //   console.warn(`Patient with NIC ${nic} already exists.`);
+        //   return;
+        // }
+
+        if (await checkIfEmailExists(email)) {
+          toast.dismiss();
+          toast.error(`Patient with E-mail ${email} already exists! Choose another E-mail.`);
+          console.warn(`Patient with E-mail ${email} already exists.`);
+          return;
+        }
+        if (await checkIfContactExists(contactNumber)) {
+          toast.dismiss();
+          toast.error(`Patient with contact Number ${contactNumber} already exists!`);
+          console.warn(`Patient with contact Number ${contactNumber} already exists.`);
+          return;
+        }
+        if (await checkIfNicExists(nic)) {
+          toast.dismiss();
+          toast.error(`Patient with NIC ${nic} already exists!`);
+          console.warn(`Patient with NIC ${nic} already exists.`);
+          return;
+        }
+        if (await checkIfAdmissionNoExists(admissionNo)) {
+          toast.dismiss();
+          toast.error(`Patient with Admission Number ${admissionNo} already exists!`);
+          console.warn(`Patient with Admission Number ${admissionNo} already exists.`);
+          return;
+        }
+
+        const auth = getAuth();
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log(user.uid);
+  
+        const patRef = doc(db, "patients", user.uid);
+  
+        //Add new document if doesn;t exist
+        await setDoc(patRef, finalData);
+        toast.dismiss();
+        toast.success("Patient registered successfully!");
+
+        await navigate("/admin/PatientReg1");
+      } catch (error) {
+        console.error("Error adding document:", error);
+        toast.dismiss();
+        toast.error("Something went wrong while submitting. Please try again.");
+      }
     }
   };
 

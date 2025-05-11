@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import Navbar from "../components/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
-import AdminHeader from "../components/AdminHeader";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, query, where, getDocs , doc , getDoc, setDoc } from "firebase/firestore"; 
+import { db } from "../config/firebase";
+import toast from "react-hot-toast";
 
 function DoAdmin2() {
   const nextButtonRef = useRef(null);
@@ -29,18 +31,139 @@ function DoAdmin2() {
     });
   };
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      const finalData = {
-        ...previousFormData,
-        ...formData,
-      };
+  function generatePassword(length = 10) {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    return password;
+  }
 
-      console.log("Doctor Combined Form Data: ", finalData);
-      // Submit `finalData` to your backend or display it
-      // navigate("/success") or show confirmation
+  const checkIfEmailExists = async (email) => {
+    const q = query(
+      collection(db, "doctors"),
+      where("email", "==", email)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if email exists
+  };
+  const checkIfDocIdExists = async (docId) => {
+    const q = query(
+      collection(db, "doctors"),
+      where("doctorId", "==", docId)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if email exists
+  };
+
+  const checkIfMbbsExists = async (mbbsNo) => {
+    const q = query(
+      collection(db, "doctors"),
+      where("mbbsNo", "==", mbbsNo)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if mbbsNo exists
+  };
+  const checkIfNicExists = async (nic) => {
+    const q = query(
+      collection(db, "doctors"),
+      where("nic", "==", nic)
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
+    return !querySnapshot.empty; // true if nic exists
+  };
+
+  const handleSubmit = async () => {
+
+    if (!validateForm()) return;
+    toast.loading("Submitting...");
+
+    const password = generatePassword();
+  
+    const finalData = {
+      ...previousFormData,
+      ...formData,
+      role: "doctor",
+      password: password,
+    };
+  
+    console.log("Submitting Doctor Data:", finalData);
+
+    
+
+    try {
+      const docId = finalData.doctorId; 
+      const email = finalData.email; 
+      const mbbsNo= finalData.mbbsNo;
+      const nic = finalData.nic;
+
+      // const docRef = doc(db, "doctors", docId);
+
+      // Check if doc already exists
+      // const docSnap = await getDoc(docRef);
+
+      // if (docSnap.exists()) {
+      //   toast.dismiss();
+      //   toast.error(`Doctor ID ${docId} already exists! Choose another ID.`);
+      //   console.warn(`Doctor with ID ${docId} already exists.`);
+      //   return;
+      // }
+      if (await checkIfEmailExists(email)) {
+        toast.dismiss();
+        toast.error(`Doctor with E-mail ${email} already exists! Choose another E-mail.`);
+        console.warn(`Doctor with E-mail ${email} already exists.`);
+        return;
+      }
+      if (await checkIfDocIdExists(docId)) {
+        toast.dismiss();
+        toast.error(`Doctor with ID ${docId} already exists! Choose another ID.`);
+        console.warn(`Doctor with ID ${docId} already exists.`);
+        return;
+      }
+      if (await checkIfMbbsExists(mbbsNo)) {
+        toast.dismiss();
+        toast.error(`Doctor with MBBS Number ${mbbsNo} already exists!`);
+        console.warn(`Doctor with MBBS Number ${mbbsNo} already exists.`);
+        return;
+      }
+      if (await checkIfNicExists(nic)) {
+        toast.dismiss();
+        toast.error(`Doctor with NIC ${nic} already exists!`);
+        console.warn(`Doctor with NIC ${nic} already exists.`);
+        return;
+      }
+
+      const auth = getAuth();
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log(user.uid);
+
+      const docRef = doc(db, "doctors", user.uid);
+
+      //Add new document if doesn't exist
+      await setDoc(docRef, finalData);
+      toast.dismiss();
+      toast.success("Doctor registered successfully!");
+
+      await navigate("/admin/DoAdmin1");
+    } catch (error) {
+      console.error("Error adding document:", error);
+      toast.dismiss();
+      toast.error("Something went wrong while creating account. Please try again.");
     }
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;

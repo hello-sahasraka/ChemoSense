@@ -18,14 +18,18 @@ import DocSettings from "./pages/Doctor/DocSettings";
 import SubHeader from "./components/Doctor/SubHeader";
 import AdminSettings from "./pages/Admin/AdminSettings";
 import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./utils/Auth";
 
 
 
 
 function App() {
   return (
+    <AuthProvider>
     <div className="flex h-screen overflow-hidden">
       <BrowserRouter>
+      <Toaster position="top-center" />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/admin" element={<AdminDashboard />}>
@@ -54,7 +58,7 @@ function App() {
             </Route>
 
           </Route>
-
+          {/* Doctor Dashboard */}
           <Route path="/doctor" element={<DoctorDashboard />}>
             <Route index element={<PatientDetails />} />
             <Route path="details" element={<PatientDetails />} />
@@ -66,6 +70,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </div>
+    </AuthProvider>
   );
 }
 

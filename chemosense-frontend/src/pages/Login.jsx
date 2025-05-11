@@ -1,8 +1,27 @@
 import React, { useState } from "react";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../utils/Auth";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const auth = useAuth();
+
+  
+
+    const handleLogin = async () => {  
+      const role = await auth.login(email, password) 
+
+      if (role === "admin") navigate("/admin");
+      else if (role === "doctor") navigate("/doctor");
+      else {
+        console.warn("Login failed or user role not recognized.");
+        return null;
+      }
+    }
 
   return (
     <div className="flex items-center justify-center min-w-full min-h-screen bg-[#ECECEC] p-4 border-2">
@@ -14,14 +33,18 @@ const Login = () => {
             <img src="./logo.png" alt="Logo" className="h-8" />
           </div>
           <input
-            type="text"
-            placeholder="NIC"
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 mb-7 rounded-lg bg-[#D6D6D6]"
           />
           <div className="relative w-full">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 mb-4 rounded-lg bg-[#D6D6D6]"
             />
             <span
@@ -44,7 +67,9 @@ const Login = () => {
               Forgot Password?
             </a>
           </div>
-          <button className="w-40 mx-auto bg-[#1330BE] text-white items-center mt-3 p-3 rounded-lg shadow-md cursor-pointer">
+          <button className="w-40 mx-auto bg-[#1330BE] text-white items-center mt-3 p-3 rounded-lg shadow-md cursor-pointer hover:bg-blue-700 transition duration-200"
+            onClick={handleLogin}
+          >
             Log In
           </button>
           <p className="text-center text-sm mt-4">
