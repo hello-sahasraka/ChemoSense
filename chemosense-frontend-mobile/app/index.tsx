@@ -29,7 +29,7 @@ const AppIndex = () => {
 
     const timer = setTimeout(() => {
       console.log("AppIndex: Navigating to PatLogIn");
-      router.replace('/PatLogIn'); // Navigate to PatLogIn screen
+      router.replace('/dashboard'); // Navigate to PatLogIn screen
     }, 4000); // 4 seconds
 
     return () => {
