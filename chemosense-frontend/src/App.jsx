@@ -20,6 +20,7 @@ import AdminSettings from "./pages/Admin/AdminSettings";
 import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./utils/Auth";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 
 
@@ -32,39 +33,40 @@ function App() {
       <Toaster position="top-center" />
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/admin" element={<AdminDashboard />}>
 
+          {/* Admin Dashboard */}
+          <Route path="/admin" element={<AdminDashboard />}>
             {/* Admin User Resgistration */}
-            <Route index element={<DoAdmin1 />} />
-            <Route path="DoAdmin1" element={<DoAdmin1 />} />
-            <Route path="DoAdmin2" element={<DoAdmin2 />} />
-            <Route path="patientreg1" element={<PatientReg1 />} />
-            <Route path="patientreg2" element={<PatientReg2 />} />
+            <Route index element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} />
+            <Route path="DoAdmin1" element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} />
+            <Route path="DoAdmin2" element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin2 /></ProtectedRoute>} />
+            <Route path="patientreg1" element={<ProtectedRoute allowedRoles={['admin']}><PatientReg1 /></ProtectedRoute>} />
+            <Route path="patientreg2" element={<ProtectedRoute allowedRoles={['admin']}><PatientReg2 /></ProtectedRoute>} />
 
 
             {/* Admin Edit */}
             <Route path="edit" element={<AdminEdit />}>
-              <Route index element={<AdminEditDoctor />} />
-              <Route path="doctorlist" element={<AdminEditDoctor />} />
-              <Route path="patientlist" element={<AdminEditPatient />} />
-              <Route path="doctorlist/:id" element={<AdminEditSingleDoc />} />
-              <Route path="patientlist/:id" element={<AdminEditSinglePat />} />
+              <Route index element={<ProtectedRoute allowedRoles={['admin']}><AdminEditDoctor /></ProtectedRoute>} />
+              <Route path="doctorlist" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditDoctor /></ProtectedRoute>} />
+              <Route path="patientlist" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditPatient /></ProtectedRoute>} />
+              <Route path="doctorlist/:id" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditSingleDoc /></ProtectedRoute>} />
+              <Route path="patientlist/:id" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditSinglePat /></ProtectedRoute>} />
             </Route>
 
             {/* Admin Settings */}
             <Route path="settings" element={<AdminSettings />}>
-              <Route index element={<AdminSettingsDetails />} />
-              <Route path="details" element={<AdminSettingsDetails />} />
+              <Route index element={<ProtectedRoute allowedRoles={['admin']}><AdminSettingsDetails /></ProtectedRoute>} />
+              <Route path="details" element={<ProtectedRoute allowedRoles={['admin']}><AdminSettingsDetails /></ProtectedRoute>} />
             </Route>
 
           </Route>
           {/* Doctor Dashboard */}
           <Route path="/doctor" element={<DoctorDashboard />}>
-            <Route index element={<PatientDetails />} />
-            <Route path="details" element={<PatientDetails />} />
-            <Route path="details/:nic" element={<DocDetailsSinglePat />} />
-            <Route path="notification" element={<h1><SubHeader stype={"Notification"} /> Notification</h1>} />
-            <Route path="settings" element={<DocSettings />} />
+            <Route index element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
+            <Route path="details" element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
+            <Route path="details/:nic" element={<ProtectedRoute allowedRoles={['doctor']}><DocDetailsSinglePat /></ProtectedRoute>} />
+            <Route path="notification" element={<ProtectedRoute allowedRoles={['doctor']}><h1><SubHeader stype={"Notification"} /> Notification</h1></ProtectedRoute>} />
+            <Route path="settings" element={<ProtectedRoute allowedRoles={['doctor']}><DocSettings /></ProtectedRoute>} />
           </Route>
           <Route path="*" element={<h1 className="text-[50px] flex justify-center items-center w-full h-screen ">Error 404</h1>} />
         </Routes>

@@ -106,18 +106,7 @@ function DoAdmin2() {
       const email = finalData.email; 
       const mbbsNo= finalData.mbbsNo;
       const nic = finalData.nic;
-
-      // const docRef = doc(db, "doctors", docId);
-
-      // Check if doc already exists
-      // const docSnap = await getDoc(docRef);
-
-      // if (docSnap.exists()) {
-      //   toast.dismiss();
-      //   toast.error(`Doctor ID ${docId} already exists! Choose another ID.`);
-      //   console.warn(`Doctor with ID ${docId} already exists.`);
-      //   return;
-      // }
+      
       if (await checkIfEmailExists(email)) {
         toast.dismiss();
         toast.error(`Doctor with E-mail ${email} already exists! Choose another E-mail.`);

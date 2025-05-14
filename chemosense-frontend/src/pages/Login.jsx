@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
@@ -11,16 +11,22 @@ const Login = () => {
   const auth = useAuth();
 
   
-
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser?.role === "admin") navigate("/admin");
+    else if (storedUser?.role === "doctor") navigate("/doctor");
+  }, []);
     const handleLogin = async () => {  
       const role = await auth.login(email, password) 
 
+      if (!role) {
+        console.warn("Login failed or user role not recognized.");
+        return;
+      }
+    
       if (role === "admin") navigate("/admin");
       else if (role === "doctor") navigate("/doctor");
-      else {
-        console.warn("Login failed or user role not recognized.");
-        return null;
-      }
+  
     }
 
   return (
