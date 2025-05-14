@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
@@ -31,6 +31,13 @@ async function getUserRole(uid) {
 export const AuthProvider = ({children}) => {
     const [userRole, setUserRole] = useState(null)
 
+    // useEffect(() => {
+    //   const user = JSON.parse(localStorage.getItem("user"));
+    //   if (user?.role) {
+    //     setUserRole(user.role);
+    //   }
+    // }, []);
+
     const login = async (email, password) => {
 
         try {
@@ -38,14 +45,16 @@ export const AuthProvider = ({children}) => {
           const userCredential = await signInWithEmailAndPassword(auth, email, password)
           const user = userCredential.user;
           const uid = user.uid;
+          const token = await user.getIdToken();
           const userData = await getUserRole(uid);
 
           if (!userData) {
             toast.error(`User not found!`);
             return null;
           }
+          // Optionally, store token in localStorage or cookie
+          localStorage.setItem("token", token);
           
-
           localStorage.setItem("user", JSON.stringify({
             uid: user.uid,
             email: userData.data.email,
@@ -61,8 +70,14 @@ export const AuthProvider = ({children}) => {
         } 
     }
 
-    const logout = () => {
-        // setUser(null)
+    const logout = (navigate) => {
+      const auth = getAuth();
+      auth.signOut();
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      setUserRole(null);
+      toast.success("Logged out!");
+      navigate("/");
     }
 
     return(
