@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Pip/Setuptools
+pip-delete-this-directory.txt
+pip-selfcheck.json
+
+# Distribution / Packaging
+*.egg-info/
+*.egg
+dist/
+build/
+sdist/
+wheels/
+*.so
+
+# IDE & Editor
+.vscode/
+.idea/
+.settings/
+*.swp
+*.swo
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
