@@ -8,8 +8,8 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { LineChart } from "react-native-chart-kit";
 import { useNavigation } from "expo-router";
+import { Chart, Line } from "react-native-responsive-linechart";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -83,27 +83,26 @@ const PatDashboard = () => {
           </Text>
           <Ionicons name="heart-outline" size={20} color="#2B59FF" />
         </View>
-        <LineChart
-          data={{
-            labels: [],
-            datasets: [{ data: heartRate.length ? heartRate : [70, 72, 75] }],
-          }}
-          width={screenWidth - 40}
-          height={100}
-          withDots={false}
-          withHorizontalLines={false}
-          withVerticalLines={false}
-          withInnerLines={false}
-          chartConfig={{
-            backgroundColor: "white",
-            backgroundGradientFrom: "#f0f4ff",
-            backgroundGradientTo: "#ffffff",
-            color: () => "#2B59FF",
-            strokeWidth: 2,
-            propsForBackgroundLines: { stroke: "transparent" },
-          }}
-          style={{ borderRadius: 8 }}
-        />
+        {/* @ts-ignore */}
+        <Chart
+          style={{ width: screenWidth - 40, height: 100 }}
+          xDomain={{ min: 0, max: MAX_POINTS - 1 }}
+          yDomain={{ min: 50, max: 120 }}
+          padding={{ left: 10, right: 10, top: 10, bottom: 10 }}
+        >
+          <Line
+            data={
+              heartRate.length
+                ? heartRate.map((y, x) => ({ x, y }))
+                : [
+                    { x: 0, y: 70 },
+                    { x: 1, y: 72 },
+                    { x: 2, y: 75 },
+                  ]
+            }
+            theme={{ stroke: { color: "#2B59FF", width: 2 } }}
+          />
+        </Chart>
       </View>
 
       {/* Grid Section */}
