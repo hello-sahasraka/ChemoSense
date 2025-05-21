@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
+import { db } from "../config/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 
 const DATA_LIST = [
   {
@@ -18,6 +21,25 @@ const DATA_LIST = [
 ];
 
 const DocEdit = () => {
+
+  const { id } = useParams();
+
+  const getDoctorData = async (id) => {
+    try {
+      const docRef = doc(db, "doctors", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        return docSnap.data();
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    }
+  };
+  
   const [formData, setFormData] = useState({
     name: "",
     nic: "",
@@ -37,27 +59,35 @@ const DocEdit = () => {
   });
 
   useEffect(() => {
-    if (DATA_LIST.length > 0) {
-      const doc = DATA_LIST[0];
+  const fetchData = async () => {
+    const data = await getDoctorData(id);
+    console.log(data);
+    
+    if (data) {
       const initialData = {
-        name: doc.name || "",
-        nic: doc.nic || "",
-        email: doc.email || "",
-        mbbsNo: doc.mbbs_no || "",
-        contactNo: doc.contact_no || "",
-        doctorId: doc.doctor_id || "",
-        dateOfJoining: doc.dateOfJoining || "",
-        ward1: doc.ward1 || "",
-        ward2: doc.ward2 || "",
-        specification: doc.specification || "",
+        name: data.fullName || "",
+        nic: data.nic || "",
+        email: data.email || "",
+        mbbsNo: data.mbbsNo || "",
+        contactNo: data.contactNo || "",
+        doctorId: data.doctorId || "",
+        dateOfJoining: data.dob || "",
+        ward1: data.wards[0] || "",
+        ward2: data.wards[1] || "",
+        specification: data.specification || "",
       };
+      
       setFormData(initialData);
       setDisplayData({
-        name: doc.name || "",
-        email: doc.email || "",
+        name: data.fullName || "",
+        email: data.email || "",
       });
     }
-  }, []);
+  };
+
+  if (id) fetchData();
+}, [id]);
+
 
   const [isEditable, setIsEditable] = useState({
     name: false,

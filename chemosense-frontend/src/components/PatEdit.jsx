@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
+import { db } from "../config/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 
-const DATA_LIST = [
-  {
-    name: "Anushka Perera",
-    nic: "951234567V",
-    cancer_type: "Breast Cancer",
-    contact_no: "+94 771234567",
-    email: "anushka9555@gmail.com",
-    dateOfJoining: "2022-05-20",
-    ward1: "ward 01",
-    ward2: "ward 02",
-    specification: "Anushka is a breast cancer patient...",
-  },
-];
 
 const PatEdit = () => {
+  
+  const { id } = useParams();
+
+  const getPatientData = async (id) => {
+    try {
+      const docRef = doc(db, "patients", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        return docSnap.data();
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    }
+  };
+
+
   const [formData, setFormData] = useState({
     name: "",
     nic: "",
@@ -26,7 +36,7 @@ const PatEdit = () => {
     dateOfJoining: "",
     ward1: "",
     ward2: "",
-    specification: "",
+    specification: "a breast cancer patient",
   });
 
   const [displayData, setDisplayData] = useState({
@@ -47,26 +57,27 @@ const PatEdit = () => {
   });
 
   useEffect(() => {
-    if (DATA_LIST.length > 0) {
-      const patient = DATA_LIST[0];
-      const initialData = {
-        name: patient.name || "",
-        nic: patient.nic || "",
-        cancerType: patient.cancer_type || "",
-        contactNo: patient.contact_no || "",
-        email: patient.email || "",
-        dateOfJoining: patient.dateOfJoining || "",
-        ward1: patient.ward1 || "",
-        ward2: patient.ward2 || "",
-        specification: patient.specification || "",
-      };
-      setFormData(initialData);
-      setDisplayData({
-        name: patient.name || "",
-        email: patient.email || "",
-      });
-    }
-  }, []);
+    const fetchData = async () => {
+      const data = await getPatientData(id);
+      if (data) {
+        const formattedData = {
+          name: data.fullName || "",
+          nic: data.nic || "",
+          cancerType: data.cancerType || "",
+          contactNo: data.contactNumber || "",
+          email: data.email || "",
+          dateOfJoining: data.dob || "",
+          ward1: data.wardNo || "",
+          ward2: data.ward2 || "",
+          specification: data.discrition || "",
+        };
+        setFormData(formattedData);
+        setDisplayData({ name: data.fullName || "", email: data.email || "" });
+      }
+    };
+  
+    if (id) fetchData();
+  }, [id]);
 
   const handleEditClick = (field) => {
     setIsEditable((prev) => ({

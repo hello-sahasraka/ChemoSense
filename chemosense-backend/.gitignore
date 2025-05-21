@@ -12,6 +12,7 @@ ENV/
 # Pip/Setuptools
 pip-delete-this-directory.txt
 pip-selfcheck.json
+AdminAccountKey.json
 
 # Distribution / Packaging
 *.egg-info/
