@@ -20,7 +20,8 @@ const AdminEditDoctor = () => {
       const querySnapshot = await getDocs(collection(db, "doctors"));
       const doctorsArray = [];
       querySnapshot.forEach((doc) => {
-        doctorsArray.push({...doc.data()}); // include doc id if needed
+        // doctorsArray.push({...doc.data()});
+        doctorsArray.push({ id: doc.id, ...doc.data() }); // include doc id if needed
       });
       setDoctors(doctorsArray);
       setFilteredData(doctorsArray)
@@ -98,7 +99,7 @@ const AdminEditDoctor = () => {
                           <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.contactNo}</td>
                           <td className='px-6 py-3 whitespace-nowrap'>
                             <button className='text-indigo-600 hover:text-indigo-400 mr-2 cursor-pointer'
-                            onClick={() => handleEdit(data.doctor_id)}
+                            onClick={() => handleEdit(data.id)}
                             ><BiSolidEdit size={18} /></button>
 
                             <button className='text-red-600 hover:text-red-400 cursor-pointer'
