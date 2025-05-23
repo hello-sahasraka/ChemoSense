@@ -21,6 +21,7 @@ import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./utils/Auth";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import Notification from "./pages/Doctor/Notification";
 
 
 
@@ -65,7 +66,7 @@ function App() {
             <Route index element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
             <Route path="details" element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
             <Route path="details/:nic" element={<ProtectedRoute allowedRoles={['doctor']}><DocDetailsSinglePat /></ProtectedRoute>} />
-            <Route path="notification" element={<ProtectedRoute allowedRoles={['doctor']}><h1><SubHeader stype={"Notification"} /> Notification</h1></ProtectedRoute>} />
+            <Route path="notification" element={<ProtectedRoute allowedRoles={['doctor']}><Notification /></ProtectedRoute>} />
             <Route path="settings" element={<ProtectedRoute allowedRoles={['doctor']}><DocSettings /></ProtectedRoute>} />
           </Route>
           <Route path="*" element={<h1 className="text-[50px] flex justify-center items-center w-full h-screen ">Error 404</h1>} />
