@@ -59,7 +59,11 @@ const PatLogIn = () => {
 
       console.log("Logged in as:", user.email);
       // TODO: Implement remember me logic here
-      router.replace("/dashboard");
+      // Pass the user UID to the dashboard route
+      router.replace({
+        pathname: "/dashboard",
+        params: { uid: user.uid },
+      });
     } catch (err: any) {
       console.error("Login error:", err);
       switch (err.code) {
