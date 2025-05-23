@@ -6,7 +6,10 @@ import { BiSolidEdit } from "react-icons/bi";
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 
 const AdminEditDoctor = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,9 +49,37 @@ const AdminEditDoctor = () => {
     navigate(`/admin/edit/patientlist/${nic}`);
   };
 
-  const handleDelete = (index) => {
-    del(index);
-  }
+  const handleDelete = async (patientid) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    });
+  
+    if (result.isConfirmed) {
+      toast.loading("Deleting...");
+      try {
+        await deleteDoc(doc(db, "doctors", patientid));
+        toast.dismiss();
+        await getPatientList(); // refresh list
+        console.log("Document deleted successfully.");
+  
+        Swal.fire({
+          title: "Deleted!",
+          text: "Doctor has been removed.",
+          icon: "success"
+        });
+      } catch (error) {
+        toast.dismiss();
+        toast.error("Failed to delete!");
+        console.error("Error deleting document:", error);
+      }
+    }
+  };
 
   return (
     <div className='w-full h-auto relative'>
@@ -99,7 +130,7 @@ const AdminEditDoctor = () => {
                             ><BiSolidEdit size={18} /></button>
 
                             <button className='text-red-600 hover:text-red-400 cursor-pointer'
-                            onClick={handleDelete}
+                            onClick={() => handleDelete(data.id)}
                             ><RiDeleteBin6Line size={18} /></button>
                           </td>
                           
