@@ -4,6 +4,9 @@ import { FaEdit } from "react-icons/fa";
 import { db } from "../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+
 
 const DATA_LIST = [
   {
@@ -21,6 +24,8 @@ const DATA_LIST = [
 ];
 
 const DocEdit = () => {
+  const navigate = useNavigate();
+
 
   const { id } = useParams();
 
@@ -39,7 +44,7 @@ const DocEdit = () => {
       console.error("Error fetching patient data:", error);
     }
   };
-  
+
   const [formData, setFormData] = useState({
     name: "",
     nic: "",
@@ -59,34 +64,34 @@ const DocEdit = () => {
   });
 
   useEffect(() => {
-  const fetchData = async () => {
-    const data = await getDoctorData(id);
-    console.log(data);
-    
-    if (data) {
-      const initialData = {
-        name: data.fullName || "",
-        nic: data.nic || "",
-        email: data.email || "",
-        mbbsNo: data.mbbsNo || "",
-        contactNo: data.contactNo || "",
-        doctorId: data.doctorId || "",
-        dateOfJoining: data.dob || "",
-        ward1: data.wards[0] || "",
-        ward2: data.wards[1] || "",
-        specification: data.specification || "",
-      };
-      
-      setFormData(initialData);
-      setDisplayData({
-        name: data.fullName || "",
-        email: data.email || "",
-      });
-    }
-  };
+    const fetchData = async () => {
+      const data = await getDoctorData(id);
+      console.log(data);
 
-  if (id) fetchData();
-}, [id]);
+      if (data) {
+        const initialData = {
+          name: data.fullName || "",
+          nic: data.nic || "",
+          email: data.email || "",
+          mbbsNo: data.mbbsNo || "",
+          contactNo: data.contactNo || "",
+          doctorId: data.doctorId || "",
+          dateOfJoining: data.dob || "",
+          ward1: data.wards[0] || "",
+          ward2: data.wards[1] || "",
+          specification: data.specification || "",
+        };
+
+        setFormData(initialData);
+        setDisplayData({
+          name: data.fullName || "",
+          email: data.email || "",
+        });
+      }
+    };
+
+    if (id) fetchData();
+  }, [id]);
 
 
   const [isEditable, setIsEditable] = useState({
@@ -257,11 +262,10 @@ const DocEdit = () => {
             value={formData.specification}
             onChange={handleChange}
             className={`w-full p-2 h-[175px] border rounded-md text-sm pr-6 transition duration-200 
-                            ${
-                              isEditable.specification
-                                ? "border-black-400"
-                                : "bg-white border-gray-300"
-                            }`}
+                            ${isEditable.specification
+                ? "border-black-400"
+                : "bg-white border-gray-300"
+              }`}
             disabled={!isEditable.specification}
           />
           <FaEdit
@@ -272,7 +276,7 @@ const DocEdit = () => {
       </div>
 
       <div className="flex justify-between items-center mt-10 w-full">
-        <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center">
+        <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center  " onClick={() => navigate(-1)}>
           Back
         </button>
 
@@ -284,7 +288,7 @@ const DocEdit = () => {
             Save changes
           </button>
         </div>
-      </div>
+      </div >
     </>
   );
 };
@@ -305,11 +309,10 @@ const InputField = ({
         onChange={onChange}
         placeholder={placeholder}
         className={`w-full p-2 border rounded-md text-sm pr-6 transition duration-200 
-                    ${
-                      editable
-                        ? " border-black-400"
-                        : "bg-white border-gray-300"
-                    }`}
+                    ${editable
+            ? " border-black-400"
+            : "bg-white border-gray-300"
+          }`}
         disabled={!editable}
       />
     ) : (
@@ -318,9 +321,8 @@ const InputField = ({
         value={value}
         onChange={onChange}
         className={`w-full p-2 border rounded-md text-sm transition duration-200 
-                    ${
-                      editable ? "border-black-400" : "bg-white border-gray-300"
-                    }`}
+                    ${editable ? "border-black-400" : "bg-white border-gray-300"
+          }`}
         placeholder={placeholder}
         disabled={!editable}
       />

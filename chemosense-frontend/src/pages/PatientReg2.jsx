@@ -16,6 +16,8 @@ function PatientReg2() {
     diagnosisDate: location.state?.diagnosisDate || "",
     admissionNo: location.state?.admissionNo || "",
     wardNo: location.state?.wardNo || "",
+    height: location.state?.height || "",
+    weight: location.state?.weight || "",
   });
 
   const [errors, setErrors] = useState({});
