@@ -4,9 +4,15 @@ import { FaEdit } from "react-icons/fa";
 import { db } from "../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+
 
 
 const PatEdit = () => {
+
+  const navigate = useNavigate();
+
 
   const { id } = useParams();
 
@@ -185,7 +191,7 @@ const PatEdit = () => {
 
       <div className="flex justify-between items-center mt-10 w-full">
 
-        <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center">
+        <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center" onClick={() => navigate(-1)}>
           Back
         </button>
 
