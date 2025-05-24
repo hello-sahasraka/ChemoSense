@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 
 const PatEdit = () => {
-  
+
   const { id } = useParams();
 
   const getPatientData = async (id) => {
@@ -32,6 +32,8 @@ const PatEdit = () => {
     nic: "",
     cancerType: "",
     contactNo: "",
+    height: "",
+    weight: "",
     email: "",
     dateOfJoining: "",
     ward1: "",
@@ -54,6 +56,8 @@ const PatEdit = () => {
     ward1: false,
     ward2: false,
     specification: false,
+    height: false,
+    weight: false
   });
 
   useEffect(() => {
@@ -75,7 +79,7 @@ const PatEdit = () => {
         setDisplayData({ name: data.fullName || "", email: data.email || "" });
       }
     };
-  
+
     if (id) fetchData();
   }, [id]);
 
@@ -103,22 +107,22 @@ const PatEdit = () => {
     });
   };
 
- return (
-         <>
-             <div className="overflow-y-auto max-h-[50vh]">
-                 <div className="flex items-center gap-6 p-4">
-                     <div className="w-24 h-24 flex items-center justify-center bg-gray-200 rounded-full ml-18 mb-5 mt-3">
-                         <FaUserCircle className="text-gray-700 text-6xl" />
-                     </div>
- 
-                     <div className="flex flex-col justify-center">
-                         <h1 className="text-2xl font-semibold text-gray-700">
-                             {displayData.name}
-                         </h1>
-                         <p className="text-sm text-gray-400">{displayData.email}</p>
-                     </div>
-                 </div>
- 
+  return (
+    <>
+      <div className="overflow-y-auto max-h-[50vh]">
+        <div className="flex items-center gap-6 p-4">
+          <div className="w-24 h-24 flex items-center justify-center bg-gray-200 rounded-full ml-18 mb-5 mt-3">
+            <FaUserCircle className="text-gray-700 text-6xl" />
+          </div>
+
+          <div className="flex flex-col justify-center">
+            <h1 className="text-2xl font-semibold text-gray-700">
+              {displayData.name}
+            </h1>
+            <p className="text-sm text-gray-400">{displayData.email}</p>
+          </div>
+        </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ml-10">
           <InputField name="name" value={formData.name} editable={isEditable.name} onEdit={() => handleEditClick("name")} onChange={handleChange} placeholder="Full Name" />
@@ -126,6 +130,23 @@ const PatEdit = () => {
           <InputField name="email" value={formData.email} editable={isEditable.email} onEdit={() => handleEditClick("email")} onChange={handleChange} placeholder="Email" />
           <InputField name="cancerType" value={formData.cancerType} editable={isEditable.cancerType} onEdit={() => handleEditClick("cancerType")} onChange={handleChange} placeholder="Cancer Type" />
           <InputField name="contactNo" value={formData.contactNo} editable={isEditable.contactNo} onEdit={() => handleEditClick("contactNo")} onChange={handleChange} placeholder="Contact No" />
+          <InputField
+            name="height"
+            value={formData.height}
+            editable={isEditable.height}
+            onEdit={() => handleEditClick("height")}
+            onChange={handleChange}
+            placeholder="Height (in cm)"
+          />
+          <InputField
+            name="weight"
+            value={formData.weight}
+            editable={isEditable.weight}
+            onEdit={() => handleEditClick("weight")}
+            onChange={handleChange}
+            placeholder="Weight (in kg)"
+          />
+
         </div>
 
         <div className="gap-4 ml-10 mt-4">
@@ -162,22 +183,22 @@ const PatEdit = () => {
         </div>
       </div>
 
-        <div className="flex justify-between items-center mt-10 w-full">
+      <div className="flex justify-between items-center mt-10 w-full">
 
-                <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center">
-                    Back
-                </button>
+        <button className="w-[125px] h-[35px] border px-4 py-2 rounded-full text-gray-700 cursor-pointer flex justify-center items-center">
+          Back
+        </button>
 
-                <div className="flex justify-center">
-                    <button
-                        onClick={handleSave}
-                        className="w-[150px] h-[35px] bg-green-700 text-white px-6 py-2 rounded-full cursor-pointer shadow-lg flex justify-center items-center">
-                        Save changes
-                    </button>
-                </div>
-            </div>
-        </>
-    );
+        <div className="flex justify-center">
+          <button
+            onClick={handleSave}
+            className="w-[150px] h-[35px] bg-green-700 text-white px-6 py-2 rounded-full cursor-pointer shadow-lg flex justify-center items-center">
+            Save changes
+          </button>
+        </div>
+      </div>
+    </>
+  );
 };
 
 const InputField = ({ name, value, editable, onEdit, onChange, placeholder }) => (
