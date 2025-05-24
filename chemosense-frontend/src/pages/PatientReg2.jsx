@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, query, where, getDocs , doc , getDoc, setDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import toast from "react-hot-toast";
 import { p } from "framer-motion/client";
@@ -35,7 +35,7 @@ function PatientReg2() {
     }
     return password;
   }
-  
+
 
 
   const checkIfEmailExists = async (email) => {
@@ -43,9 +43,9 @@ function PatientReg2() {
       collection(db, "patients"),
       where("email", "==", email)
     );
-  
+
     const querySnapshot = await getDocs(q);
-  
+
     return !querySnapshot.empty; // true if email exists
   };
 
@@ -54,9 +54,9 @@ function PatientReg2() {
       collection(db, "patients"),
       where("nic", "==", nic)
     );
-  
+
     const querySnapshot = await getDocs(q);
-  
+
     return !querySnapshot.empty; // true if nic exists
   };
   const checkIfContactExists = async (contactNumber) => {
@@ -64,9 +64,9 @@ function PatientReg2() {
       collection(db, "patients"),
       where("contactNumber", "==", contactNumber)
     );
-  
+
     const querySnapshot = await getDocs(q);
-  
+
     return !querySnapshot.empty; // true if nic exists
   };
   const checkIfAdmissionNoExists = async (admissionNo) => {
@@ -74,9 +74,9 @@ function PatientReg2() {
       collection(db, "patients"),
       where("admissionNo", "==", admissionNo)
     );
-  
+
     const querySnapshot = await getDocs(q);
-  
+
     return !querySnapshot.empty; // true if nic exists
   };
 
@@ -94,19 +94,19 @@ function PatientReg2() {
 
       };
 
-      
+
 
       console.log("Patient Combined Form Data: ", finalData);
 
       try {
-        const email = finalData.email; 
-        const contactNumber= finalData.contactNumber;
-        const admissionNo= finalData.admissionNo;
+        const email = finalData.email;
+        const contactNumber = finalData.contactNumber;
+        const admissionNo = finalData.admissionNo;
         const nic = finalData.nic;
-  
+
         // Check if pat already exists
         // const patSnap = await getDoc(patRef);
-  
+
         // if (patSnap.exists()) {
         //   toast.dismiss();
         //   toast.error(`Patient ${nic} already exists! Can't register again.`);
@@ -144,9 +144,9 @@ function PatientReg2() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log(user.uid);
-  
+
         const patRef = doc(db, "patients", user.uid);
-  
+
         //Add new document if doesn;t exist
         await setDoc(patRef, finalData);
         toast.dismiss();
@@ -250,6 +250,30 @@ function PatientReg2() {
                   />
                 </div>
               </div>
+              <div className="flex gap-5">
+                <div className="flex items-center w-1/2">
+                  <input
+                    type="text"
+                    name="height"
+                    value={formData.height}
+                    onChange={handleChange}
+                    placeholder="Height (e.g., 170 cm)"
+                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                  />
+                </div>
+                <div className="flex items-center w-1/2">
+                  <input
+                    type="text"
+                    name="weight"
+                    value={formData.weight}
+                    onChange={handleChange}
+                    placeholder="Weight (e.g., 65 kg)"
+                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                  />
+                </div>
+              </div>
+
+
             </div>
 
             {/* Administrative Information */}

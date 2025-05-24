@@ -3,10 +3,10 @@ import SubHeader from '../../components/Doctor/SubHeader'
 
 const Notification = () => {
   return (
-   
+
     <div>
-        <SubHeader stype={"Notification"} />
-        Notification
+      <SubHeader stype={"Notification"} />
+      Notification
     </div>
   )
 }
