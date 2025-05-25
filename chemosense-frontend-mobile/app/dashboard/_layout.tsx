@@ -1,12 +1,13 @@
-import { Stack } from 'expo-router';
-import React from 'react';
+import { Stack } from "expo-router";
+import React from "react";
 
 export default function DashboardLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" options={{ title: 'Dashboard' }} />
-      <Stack.Screen name="Notification" options={{ title: 'Notifications' }} />
-      <Stack.Screen name="PatEditProfile" options={{ title: 'Edit Profile' }} />
+      <Stack.Screen name="index" options={{ title: "Dashboard" }} />
+      <Stack.Screen name="Notification" options={{ title: "Notifications" }} />
+      <Stack.Screen name="PatEditProfile" options={{ title: "Edit Profile" }} />
+      <Stack.Screen name="Chatbot" options={{ title: "Chatbot" }} />
       {/* Add other dashboard-specific screens here */}
     </Stack>
   );
