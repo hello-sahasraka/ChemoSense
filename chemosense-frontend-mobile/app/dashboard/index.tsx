@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Dimensions, TouchableOpacity } from "react-native";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "expo-router"; // Removed useLocalSearchParams
 import {
   Chart,
   Line,
@@ -9,8 +9,19 @@ import {
   HorizontalAxis,
 } from "react-native-responsive-linechart";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore"; // Uncommented Firestore imports
+import {
+  doc,
+  getDoc,
+  getDocs, // Import getDocs
+  getFirestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+} from "firebase/firestore"; // Uncommented Firestore imports and added necessary imports
 import { db } from "../../firebase"; // Assuming firebase config is in project root
+import { Alert } from "react-native"; // Import Alert
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -22,6 +33,7 @@ const PatDashboard = () => {
   const [heartRate, setHeartRate] = useState<number[]>([]);
   const [bloodOxygen, setBloodOxygen] = useState<number | null>(null);
   const [temperature, setTemperature] = useState<number | null>(null);
+  const [riskLevel, setRiskLevel] = useState<string | null>(null); // Add state for riskLevel
   const MAX_POINTS = 20;
 
   const auth = getAuth();
@@ -57,45 +69,51 @@ const PatDashboard = () => {
       };
       fetchUserName();
 
-      // TODO: Fetch health data from Firebase based on user.uid
-      // Example (Firestore):
-      /*
-      const fetchHealthData = async () => {
+      // Fetch health data and risk level from Firebase
+      const fetchHealthDataAndRisk = async () => {
         try {
-          const userHealthDocRef = doc(firestoreDb, "health_data", user.uid); // Assuming health data is in a collection 'health_data' with document ID as UID
-          const docSnap = await getDoc(userHealthDocRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
+          const predictionsCollectionRef = collection(
+            firestoreDb,
+            "patients",
+            user.uid,
+            "predictions"
+          );
+          const latestPredictionQuery = query(
+            predictionsCollectionRef,
+            orderBy("timestamp", "desc"), // Assuming a timestamp field exists for ordering
+            limit(1)
+          );
+          const querySnapshot = await getDocs(latestPredictionQuery);
+
+          if (!querySnapshot.empty) {
+            const latestPredictionDoc = querySnapshot.docs[0];
+            const data = latestPredictionDoc.data();
+
             // Update state with fetched data
-            setHeartRate(data.heartRate || []);
-            setBloodOxygen(data.bloodOxygen || null);
-            setTemperature(data.temperature || null);
+            setHeartRate(data.heart_rate ? [data.heart_rate] : []); // Assuming heart_rate is a single value for now, adjust if it's an array
+            setBloodOxygen(data.oxygen_saturation || null);
+            setTemperature(data.body_temperature || null);
+            setRiskLevel(data.risk_level); // Explicitly set risk level
+
+            console.log("Fetched risk_level:", data.risk_level); // Log fetched risk level
+            console.log("Fetched heart_rate:", data.heart_rate); // Log fetched heart rate
+
+            // Check for high risk and show alert
+            if (data.risk_level === "High Risk") {
+              Alert.alert(
+                "High Risk Alert",
+                "Your predicted risk level is high. Please consult with a medical professional.",
+                [{ text: "OK" }]
+              );
+            }
           } else {
             console.log("No health data found for this user.");
           }
         } catch (error) {
-          console.error("Error fetching health data:", error);
+          console.error("Error fetching health data and risk:", error);
         }
       };
-      fetchHealthData();
-      */
-
-      // Example (Realtime Database):
-      /*
-      const healthDataRef = ref(getDatabase(), 'health_data/' + user.uid); // Assuming health data is under 'health_data/UID'
-      const unsubscribe = onValue(healthDataRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          // Update state with fetched data
-          setHeartRate(data.heartRate || []);
-          setBloodOxygen(data.bloodOxygen || null);
-          setTemperature(data.temperature || null);
-        } else {
-          console.log("No health data found for this user.");
-        }
-      });
-      return () => unsubscribe(); // Clean up listener
-      */
+      fetchHealthDataAndRisk();
     }
 
     // Get and format current date
@@ -190,7 +208,7 @@ const PatDashboard = () => {
           </View>
           <View className="w-20 h-20 rounded-full border-[6px] border-blue-600 justify-center items-center">
             <Text className="text-xl font-bold text-blue-600">
-              {bloodOxygen !== null ? `${bloodOxygen}%` : "--"}
+              {bloodOxygen !== null ? `${Math.floor(bloodOxygen)}%` : "--"}
             </Text>
           </View>
         </View>
@@ -206,7 +224,7 @@ const PatDashboard = () => {
             </View>
             <View className="flex-1 justify-center items-center">
               <Text className="text-3xl font-bold text-orange-500">
-                {temperature !== null ? `${temperature}°C` : "--"}
+                {temperature !== null ? `${Math.floor(temperature)}°C` : "--"}
               </Text>
             </View>
           </View>
@@ -224,8 +242,28 @@ const PatDashboard = () => {
               color="#2B59FF"
             />
           </View>
-          <Feather name="arrow-down-circle" size={28} color="green" />
-          <Text className="text-base font-bold text-green-600 mt-1">Low</Text>
+          {/* Display fetched risk level */}
+          {riskLevel === "Low Risk" && (
+            <>
+              <Feather name="arrow-down-circle" size={28} color="green" />
+              <Text className="text-base font-bold text-green-600 mt-1">
+                Low
+              </Text>
+            </>
+          )}
+          {riskLevel === "High Risk" && (
+            <>
+              <Feather name="alert-triangle" size={28} color="red" />
+              <Text className="text-base font-bold text-red-600 mt-1">
+                High
+              </Text>
+            </>
+          )}
+          {riskLevel === null && (
+            <>
+              <Text className="text-base font-bold text-gray-600 mt-1">--</Text>
+            </>
+          )}
         </View>
 
         {/* Notifications */}
