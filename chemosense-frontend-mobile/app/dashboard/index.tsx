@@ -171,10 +171,10 @@ const PatDashboard = () => {
               heartRate.length
                 ? heartRate.map((y, x) => ({ x, y }))
                 : [
-                    { x: 0, y: 70 },
-                    { x: 1, y: 72 },
-                    { x: 2, y: 75 },
-                  ]
+                  { x: 0, y: 70 },
+                  { x: 1, y: 72 },
+                  { x: 2, y: 75 },
+                ]
             }
             xDomain={{ min: 0, max: MAX_POINTS - 1 }}
             yDomain={{ min: 50, max: 120 }}
