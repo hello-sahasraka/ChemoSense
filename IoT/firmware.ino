@@ -3,8 +3,32 @@
 #include "heartRate.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
 
-// MAX30102
+// Wi-Fi and Firebase Credentials
+const char* ssid = "Dialog 4G 245";
+const char* password = "18E5040T";
+
+const char* api_key = "AIzaSyAvNfEstukksY--T5fEXxr5Hu26CplCe0c";
+const char* project_id = "chemosense-b421d";
+const char* document_id = "iM6XJeyJFFVSR5Php1LtJR4u3fx1";
+
+const char* serverIP = "192.168.8.143";
+const int port = 8000;
+
+struct UserData {
+  int age;
+  String gender;
+  double height;
+  float weight;
+  String UID;
+};
+
+UserData user;
+
+// MAX30102 setup
 MAX30105 particleSensor;
 const int SAMPLE_DELAY_MS = 20;
 const int IR_THRESHOLD = 50000;
@@ -25,7 +49,7 @@ bool collecting = false;
 unsigned long startTime = 0;
 int readingCount = 0;
 
-// DS18B20
+// DS18B20 setup
 #define ONE_WIRE_BUS 4
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature tempSensor(&oneWire);
@@ -46,14 +70,12 @@ float movingAverageFilter(float newValue) {
   return sum / FILTER_WINDOW_SIZE;
 }
 
-// BPM validation
 float validateBPM(float newBPM) {
   if (lastBPM == 0) return newBPM;
   if (abs(newBPM - lastBPM) > 20) return lastBPM;
   return newBPM;
 }
 
-// Signal quality check
 bool isSignalGood(long irValue) {
   static long lastIR = 0;
   long diff = abs(irValue - lastIR);
@@ -61,14 +83,12 @@ bool isSignalGood(long irValue) {
   return (irValue > IR_THRESHOLD && diff < 5000);
 }
 
-// Store IR/Red sample
 void storeSample(long ir, long red) {
   irBuffer[bufferIndex] = ir;
   redBuffer[bufferIndex] = red;
   bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
 }
 
-// SpO2 using AC/DC ratio
 float computeSpO2_AC_DC() {
   long irMin = irBuffer[0], irMax = irBuffer[0], irSum = 0;
   long redMin = redBuffer[0], redMax = redBuffer[0], redSum = 0;
@@ -94,7 +114,6 @@ float computeSpO2_AC_DC() {
   return constrain(spo2, 70.0, 100.0);
 }
 
-// Median BPM
 float computeMedianBPM(float *readings, int count) {
   for (int i = 0; i < count - 1; i++) {
     for (int j = i + 1; j < count; j++) {
@@ -108,22 +127,74 @@ float computeMedianBPM(float *readings, int count) {
   return readings[count / 2];
 }
 
+String getDocumentPath() {
+  return "patients/" + String(document_id);
+}
+
+void getFirestoreData() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "https://firestore.googleapis.com/v1/projects/";
+    url += project_id;
+    url += "/databases/(default)/documents/";
+    url += getDocumentPath();
+    url += "?key=" + String(api_key);
+
+    http.begin(url);
+    int httpCode = http.GET();
+
+    if (httpCode == 200) {
+      String payload = http.getString();
+      Serial.println("📄 Firestore Data:");
+      Serial.println(payload);
+
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, payload);
+
+      user.age = String(doc["fields"]["age"]["stringValue"].as<const char*>()).toInt();
+      user.gender = doc["fields"]["gender"]["stringValue"].as<String>();
+      user.height = 1.6793511495386;
+      user.weight = 70.0;
+      user.UID = "iM6XJeyJFFVSR5Php1LtJR4u3fx1";
+
+      Serial.println("👤 Age: " + String(user.age));
+      Serial.println("👤 Gender: " + user.gender);
+    } else {
+      Serial.printf("❌ Firestore Error [%d]: %s\n", httpCode, http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+  } else {
+    Serial.println("❌ WiFi not connected");
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   Wire.begin();
+  WiFi.begin(ssid, password);
 
-  // Initialize MAX30102
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\n✅ WiFi connected");
+  Serial.println(WiFi.localIP());
+
+  getFirestoreData();
+
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) {
-    Serial.println("MAX30102 not found!");
+    Serial.println("❌ MAX30102 not found!");
     while (1);
   }
+
   particleSensor.setup();
   particleSensor.setPulseAmplitudeRed(0x1F);
   particleSensor.setPulseAmplitudeIR(0x1F);
   particleSensor.setPulseAmplitudeGreen(0);
-  Serial.println("Place your finger on the sensor.");
+  Serial.println("👉 Place your finger on the sensor.");
 
-  // Initialize DS18B20
   tempSensor.begin();
 }
 
@@ -132,7 +203,6 @@ void loop() {
   long redValue = particleSensor.getRed();
   storeSample(irValue, redValue);
 
-  // Read temperature every loop (1s if SAMPLE_DELAY_MS is 20ms)
   static unsigned long lastTempRead = 0;
   if (millis() - lastTempRead >= 1000) {
     tempSensor.requestTemperatures();
@@ -161,9 +231,13 @@ void loop() {
       beatTimes[beatIndex] = currentTime;
       beatIndex = (beatIndex + 1) % BEAT_HISTORY_SIZE;
 
-      if (beatTimes[BEAT_HISTORY_SIZE - 1] != 0) {
-        float avgInterval = (beatTimes[(beatIndex + BEAT_HISTORY_SIZE - 1) % BEAT_HISTORY_SIZE] -
-                             beatTimes[beatIndex]) / (BEAT_HISTORY_SIZE - 1);
+      int filledBeats = 0;
+      for (int i = 0; i < BEAT_HISTORY_SIZE; i++) {
+        if (beatTimes[i] != 0) filledBeats++;
+      }
+
+      if (filledBeats >= 2) {
+        float avgInterval = (beatTimes[(beatIndex + BEAT_HISTORY_SIZE - 1) % BEAT_HISTORY_SIZE] - beatTimes[beatIndex]) / (BEAT_HISTORY_SIZE - 1);
         float bpm = 60000.0 / avgInterval;
         bpm = validateBPM(bpm);
         lastBPM = bpm;
@@ -175,10 +249,10 @@ void loop() {
           spo2Readings[readingCount] = spo2;
           readingCount++;
 
-          Serial.print("BPM: "); Serial.print(bpm);
-          Serial.print("  SpO2: "); Serial.print(spo2, 1);
-          Serial.print("%  Temp: "); Serial.print(temperatureSum / max(tempCount, 1), 1);
-          Serial.print(" °C  Reading "); Serial.println(readingCount);
+          Serial.print("❤️ BPM: "); Serial.print(bpm);
+          Serial.print("  🩸 SpO2: "); Serial.print(spo2, 1);
+          Serial.print("%  🌡️ Temp: "); Serial.print(temperatureSum / max(tempCount, 1), 1);
+          Serial.print(" °C  Reading: "); Serial.println(readingCount);
         }
       }
     }
@@ -190,19 +264,63 @@ void loop() {
       float avgSpO2 = (readingCount > 0) ? sumSpO2 / readingCount : 0;
       float avgTemp = (tempCount > 0) ? temperatureSum / tempCount : 0;
 
-      Serial.println("\n✅ Measurement complete:");
-      Serial.print("Median BPM: "); Serial.println(medianBPM);
+      Serial.println("\n📊 Measurement complete:");
+      Serial.print("Avg BPM: "); Serial.println(medianBPM);
       Serial.print("Avg SpO2: "); Serial.print(avgSpO2, 1); Serial.println("%");
       Serial.print("Avg Temp: "); Serial.print(avgTemp, 1); Serial.println(" °C");
       Serial.println("-----------------------");
 
       collecting = false;
-      delay(2000);
-    }
 
+      if (WiFi.status() == WL_CONNECTED) {
+        HTTPClient http;
+        String url = "http://" + String(serverIP) + ":" + String(port) + "/risk_predict/";
+        http.begin(url);
+        http.setTimeout(5000);
+        http.addHeader("Content-Type", "application/json");
+
+        // Build dynamic JSON string
+        DynamicJsonDocument doc(512);
+        doc["Heart_Rate"] = 70;
+        doc["Body_Temperature"] = avgTemp;
+        doc["Oxygen_Saturation"] = avgSpO2;
+        doc["Age"] = user.age;
+        doc["Gender"] = (user.gender == "male" ? 1 : 0);
+        doc["Weight_kg"] = user.weight;
+        doc["Height_m"] = user.height;
+        doc["UID"] = user.UID;
+
+        String JSON_Data;
+        serializeJson(doc, JSON_Data);
+
+        Serial.println("📤 Sending to server:");
+        Serial.println(JSON_Data);
+
+        int httpCode = http.POST(JSON_Data);
+        int attempts = 0;
+
+        while (httpCode <= 0 && attempts < 3) {
+          Serial.println("⚠️ Retry sending...");
+          delay(1000);
+          httpCode = http.POST(JSON_Data);
+          attempts++;
+        }
+
+        if (httpCode == 200) {
+          String response = http.getString();
+          Serial.print("✅ Server response: ");
+          Serial.println(response);
+        } else {
+          Serial.printf("❌ POST failed [%d]: %s\n", httpCode, http.errorToString(httpCode).c_str());
+        }
+
+        http.end();
+        delay(2000);
+      }
+    }
   } else {
     if (collecting) {
-      Serial.println("❌ Finger removed or poor signal. Resetting...");
+      Serial.println("❌ Finger removed or bad signal. Resetting...");
       collecting = false;
     }
   }
