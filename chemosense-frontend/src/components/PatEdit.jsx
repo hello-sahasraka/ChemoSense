@@ -75,10 +75,12 @@ const PatEdit = () => {
           nic: data.nic || "",
           cancerType: data.cancerType || "",
           contactNo: data.contactNumber || "",
+          height: (data.height+" m") || "",
+          weight: (data.weight+" kg") || "",
           email: data.email || "",
           dateOfJoining: data.dob || "",
-          ward1: data.wardNo || "",
-          ward2: data.ward2 || "",
+          ward1: ("Ward: "+data.wardNo[0]) || "",
+          ward2: ("Ward: "+data.wardNo[1]) || "",
           specification: data.discrition || "",
         };
         setFormData(formattedData);

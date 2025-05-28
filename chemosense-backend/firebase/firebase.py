@@ -1,6 +1,8 @@
 from config.firebase import db
 from firebase_admin import firestore
+from firebase_admin import auth
 from datetime import datetime
+
 
 def save_prediction(derived_bmi:float, input_data: list, prediction: str, max_predictions: int = 10):
     predictions_ref = db.collection("patients").document(input_data.UID).collection("predictions")
@@ -22,3 +24,22 @@ def save_prediction(derived_bmi:float, input_data: list, prediction: str, max_pr
     if len(docs_list) > max_predictions:
         for doc in docs_list[max_predictions:]:
             doc.reference.delete()
+
+def delete_patient_firebase(uid: str):
+    try:
+        #Delete all documents in 'predictions' subcollection
+        predictions_ref = db.collection("patients").document(uid).collection("predictions")
+        predictions = predictions_ref.stream()
+        for doc in predictions:
+            doc.reference.delete()
+
+        #Delete the patient document
+        db.collection("patients").document(uid).delete()
+
+        #Delete the Firebase Auth user
+        auth.delete_user(uid)
+
+        return {"message": "User deleted successfully."}
+    except Exception as e:
+        return {"error": str(e)}
+
