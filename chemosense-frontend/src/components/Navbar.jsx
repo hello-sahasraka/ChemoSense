@@ -12,13 +12,13 @@ const Navbar = () => {
             <ul className="space-y-3">
                 <li className="flex items-center p-3 text-sm cursor-pointer rounded-lg transition duration-300 hover:bg-[#003366]">
                     <FaThLarge className="mr-3 text-lg" />
-                    Dashboard
+                    <Link to="/admin">Dashboard</Link>
                 </li>
                 <br></br>
                 <li className="pb=0  mb=0">User</li>
                 <li className="flex items-center p-3 text-sm cursor-pointer rounded-lg transition duration-300 hover:bg-[#003366]">
                     <FaRegEdit className="mr-3 text-lg" />
-                    <Link to="/admin">Register</Link>
+                    <Link to="/admin/DoAdmin1">Register</Link>
                 </li>
                 {/* Edit Link */}
                 <li className="flex items-center p-3 text-sm cursor-pointer rounded-lg transition duration-300 hover:bg-[#003366]">

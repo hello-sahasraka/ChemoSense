@@ -11,15 +11,15 @@ const Docnavbar = () => {
 
             {/* Navigation Links */}
             <ul className="space-y-3">
-                <li className="flex items-center p-3 text-sm">
+                <li className="mt-auto p-3 text-sm cursor-pointer flex items-center rounded-lg transition duration-300 hover:bg-[#003366]">
                     <FaThLarge className="mr-3 text-lg" />
-                    Dashboard
+                    <Link to="/doctor">Dashboard</Link>
                 </li>
                 <br></br>
                 <li className="pb=0  mb=0">Patient</li>
                 <li className="flex items-center p-3 text-sm cursor-pointer rounded-lg transition duration-300 hover:bg-[#003366]">
                     <FaRegEdit className="mr-3 text-lg" />
-                    <Link to="/doctor">Details</Link>
+                    <Link to="/doctor/details">Details</Link>
                 </li>
                 {/* Edit Link */}
                 <li className="flex items-center p-3 text-sm cursor-pointer rounded-lg transition duration-300 hover:bg-[#003366]">

@@ -22,7 +22,8 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./utils/Auth";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Notification from "./pages/Doctor/Notification";
-
+import DashboardContent from "./pages/Admin/dashboardContent";
+import DoctorDashboardContent from "./pages/Doctor/DoctorDashboardContent";
 
 
 
@@ -38,7 +39,9 @@ function App() {
           {/* Admin Dashboard */}
           <Route path="/admin" element={<AdminDashboard />}>
             {/* Admin User Resgistration */}
-            <Route index element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} />
+            {/* <Route index element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} /> */}
+            <Route index element={<ProtectedRoute allowedRoles={['admin']}><DashboardContent /></ProtectedRoute>} />
+            <Route path="dashboard" element={<ProtectedRoute allowedRoles={['admin']}><DashboardContent /></ProtectedRoute>} />
             <Route path="DoAdmin1" element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} />
             <Route path="DoAdmin2" element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin2 /></ProtectedRoute>} />
             <Route path="patientreg1" element={<ProtectedRoute allowedRoles={['admin']}><PatientReg1 /></ProtectedRoute>} />
@@ -63,7 +66,8 @@ function App() {
           </Route>
           {/* Doctor Dashboard */}
           <Route path="/doctor" element={<DoctorDashboard />}>
-            <Route index element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
+            <Route index element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboardContent /></ProtectedRoute>} />
+            <Route path="dashboard" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboardContent /></ProtectedRoute>} />
             <Route path="details" element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
             <Route path="details/:nic" element={<ProtectedRoute allowedRoles={['doctor']}><DocDetailsSinglePat /></ProtectedRoute>} />
             <Route path="notification" element={<ProtectedRoute allowedRoles={['doctor']}><Notification /></ProtectedRoute>} />

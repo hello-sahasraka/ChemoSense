@@ -259,7 +259,7 @@ function PatientReg2() {
                     name="height"
                     value={formData.height}
                     onChange={handleChange}
-                    placeholder="Height (e.g., 170 cm)"
+                    placeholder="Height (e.g., 1 m)"
                     className="w-full p-2 border border-gray-300 rounded-md text-sm"
                   />
                 </div>

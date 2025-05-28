@@ -4,7 +4,6 @@ import AdminHeader from '../components/AdminHeader'
 import { Outlet } from 'react-router-dom'
 import Docnavbar from '../components/Doctor/Docnavbar'
 import DocHeader from '../components/Doctor/DocHeader'
-import SubHeader from '../components/Doctor/SubHeader'
 
 const DoctorDashboard = () => {
   return (
