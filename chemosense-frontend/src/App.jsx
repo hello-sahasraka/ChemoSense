@@ -37,8 +37,6 @@ function App() {
 
             {/* Admin Dashboard */}
             <Route path="/admin" element={<AdminDashboard />}>
-              {/* Admin User Resgistration */}
-              {/* <Route index element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} /> */}
               <Route
                 index
                 element={
@@ -152,6 +150,7 @@ function App() {
                 />
               </Route>
             </Route>
+
             {/* Doctor Dashboard */}
             <Route path="/doctor" element={<DoctorDashboard />}>
               <Route
@@ -201,8 +200,7 @@ function App() {
                     <Appointments />
                   </ProtectedRoute>
                 }
-              />{" "}
-              {/* 👈 New route */}
+              />
               <Route
                 path="settings"
                 element={
@@ -212,10 +210,12 @@ function App() {
                 }
               />
             </Route>
+
+            {/* 404 */}
             <Route
               path="*"
               element={
-                <h1 className="text-[50px] flex justify-center items-center w-full h-screen ">
+                <h1 className="text-[50px] flex justify-center items-center w-full h-screen">
                   Error 404
                 </h1>
               }
