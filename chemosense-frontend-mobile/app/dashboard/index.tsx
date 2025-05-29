@@ -171,10 +171,10 @@ const PatDashboard = () => {
               heartRate.length
                 ? heartRate.map((y, x) => ({ x, y }))
                 : [
-                  { x: 0, y: 70 },
-                  { x: 1, y: 72 },
-                  { x: 2, y: 75 },
-                ]
+                    { x: 0, y: 70 },
+                    { x: 1, y: 72 },
+                    { x: 2, y: 75 },
+                  ]
             }
             xDomain={{ min: 0, max: MAX_POINTS - 1 }}
             yDomain={{ min: 50, max: 120 }}
@@ -321,6 +321,29 @@ const PatDashboard = () => {
               </View>
               <Text className="text-xs text-gray-500 text-center">
                 All Clear
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Calendar */}
+          <TouchableOpacity
+            className="w-[47%] bg-white rounded-3xl p-4 mb-4 shadow-sm"
+            onPress={() => navigation.navigate("Calendar" as never)}
+          >
+            <View className="flex-row items-center justify-between w-full mb-4">
+              <Text className="text-sm text-gray-500 font-semibold">
+                Calendar
+              </Text>
+              <View className="bg-green-50 rounded-full p-1.5">
+                <Ionicons name="calendar-outline" size={16} color="#10B981" />
+              </View>
+            </View>
+            <View className="items-center justify-center flex-1">
+              <View className="bg-gray-50 rounded-full p-3 mb-2">
+                <Ionicons name="calendar" size={24} color="#6B7280" />
+              </View>
+              <Text className="text-xs text-gray-500 text-center">
+                View Schedule
               </Text>
             </View>
           </TouchableOpacity>
