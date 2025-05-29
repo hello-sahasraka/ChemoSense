@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from "firebase/firestore";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import axios from "axios";
 import Swal from 'sweetalert2';
 import toast from 'react-hot-toast';
 
@@ -63,7 +64,16 @@ const AdminEditDoctor = () => {
     if (result.isConfirmed) {
       toast.loading("Deleting...");
       try {
-        await deleteDoc(doc(db, "doctors", patientid));
+        const payload = {
+          uid: patientid
+        };
+
+        const response = await axios.post(`${import.meta.env.VITE_REACT_ADDRESS}/admin/delete_patient/`, payload);
+
+        if (response.data.error) {
+          throw new Error(response.data.error);
+        }
+
         toast.dismiss();
         await getPatientList(); // refresh list
         console.log("Document deleted successfully.");
