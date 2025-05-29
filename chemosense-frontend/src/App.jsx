@@ -22,61 +22,207 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./utils/Auth";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Notification from "./pages/Doctor/Notification";
+import Appointments from "./pages/Doctor/Appointments";
 import DashboardContent from "./pages/Admin/dashboardContent";
 import DoctorDashboardContent from "./pages/Doctor/DoctorDashboardContent";
-
-
 
 function App() {
   return (
     <AuthProvider>
-    <div className="flex h-screen overflow-hidden">
-      <BrowserRouter>
-      <Toaster position="top-center" />
-        <Routes>
-          <Route path="/" element={<Login />} />
+      <div className="flex h-screen overflow-hidden">
+        <BrowserRouter>
+          <Toaster position="top-center" />
+          <Routes>
+            <Route path="/" element={<Login />} />
 
-          {/* Admin Dashboard */}
-          <Route path="/admin" element={<AdminDashboard />}>
-            {/* Admin User Resgistration */}
-            {/* <Route index element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} /> */}
-            <Route index element={<ProtectedRoute allowedRoles={['admin']}><DashboardContent /></ProtectedRoute>} />
-            <Route path="dashboard" element={<ProtectedRoute allowedRoles={['admin']}><DashboardContent /></ProtectedRoute>} />
-            <Route path="DoAdmin1" element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} />
-            <Route path="DoAdmin2" element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin2 /></ProtectedRoute>} />
-            <Route path="patientreg1" element={<ProtectedRoute allowedRoles={['admin']}><PatientReg1 /></ProtectedRoute>} />
-            <Route path="patientreg2" element={<ProtectedRoute allowedRoles={['admin']}><PatientReg2 /></ProtectedRoute>} />
+            {/* Admin Dashboard */}
+            <Route path="/admin" element={<AdminDashboard />}>
+              {/* Admin User Resgistration */}
+              {/* <Route index element={<ProtectedRoute allowedRoles={['admin']}><DoAdmin1 /></ProtectedRoute>} /> */}
+              <Route
+                index
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <DashboardContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <DashboardContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="DoAdmin1"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <DoAdmin1 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="DoAdmin2"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <DoAdmin2 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="patientreg1"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <PatientReg1 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="patientreg2"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <PatientReg2 />
+                  </ProtectedRoute>
+                }
+              />
 
+              {/* Admin Edit */}
+              <Route path="edit" element={<AdminEdit />}>
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminEditDoctor />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="doctorlist"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminEditDoctor />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="patientlist"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminEditPatient />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="doctorlist/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminEditSingleDoc />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="patientlist/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminEditSinglePat />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
 
-            {/* Admin Edit */}
-            <Route path="edit" element={<AdminEdit />}>
-              <Route index element={<ProtectedRoute allowedRoles={['admin']}><AdminEditDoctor /></ProtectedRoute>} />
-              <Route path="doctorlist" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditDoctor /></ProtectedRoute>} />
-              <Route path="patientlist" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditPatient /></ProtectedRoute>} />
-              <Route path="doctorlist/:id" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditSingleDoc /></ProtectedRoute>} />
-              <Route path="patientlist/:id" element={<ProtectedRoute allowedRoles={['admin']}><AdminEditSinglePat /></ProtectedRoute>} />
+              {/* Admin Settings */}
+              <Route path="settings" element={<AdminSettings />}>
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminSettingsDetails />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="details"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminSettingsDetails />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
             </Route>
-
-            {/* Admin Settings */}
-            <Route path="settings" element={<AdminSettings />}>
-              <Route index element={<ProtectedRoute allowedRoles={['admin']}><AdminSettingsDetails /></ProtectedRoute>} />
-              <Route path="details" element={<ProtectedRoute allowedRoles={['admin']}><AdminSettingsDetails /></ProtectedRoute>} />
+            {/* Doctor Dashboard */}
+            <Route path="/doctor" element={<DoctorDashboard />}>
+              <Route
+                index
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <DoctorDashboardContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <DoctorDashboardContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="details"
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <PatientDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="details/:nic"
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <DocDetailsSinglePat />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="notification"
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <Notification />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="appointments"
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <Appointments />
+                  </ProtectedRoute>
+                }
+              />{" "}
+              {/* 👈 New route */}
+              <Route
+                path="settings"
+                element={
+                  <ProtectedRoute allowedRoles={["doctor"]}>
+                    <DocSettings />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
-
-          </Route>
-          {/* Doctor Dashboard */}
-          <Route path="/doctor" element={<DoctorDashboard />}>
-            <Route index element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboardContent /></ProtectedRoute>} />
-            <Route path="dashboard" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboardContent /></ProtectedRoute>} />
-            <Route path="details" element={<ProtectedRoute allowedRoles={['doctor']}><PatientDetails /></ProtectedRoute>} />
-            <Route path="details/:nic" element={<ProtectedRoute allowedRoles={['doctor']}><DocDetailsSinglePat /></ProtectedRoute>} />
-            <Route path="notification" element={<ProtectedRoute allowedRoles={['doctor']}><Notification /></ProtectedRoute>} />
-            <Route path="settings" element={<ProtectedRoute allowedRoles={['doctor']}><DocSettings /></ProtectedRoute>} />
-          </Route>
-          <Route path="*" element={<h1 className="text-[50px] flex justify-center items-center w-full h-screen ">Error 404</h1>} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+            <Route
+              path="*"
+              element={
+                <h1 className="text-[50px] flex justify-center items-center w-full h-screen ">
+                  Error 404
+                </h1>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </div>
     </AuthProvider>
   );
 }
