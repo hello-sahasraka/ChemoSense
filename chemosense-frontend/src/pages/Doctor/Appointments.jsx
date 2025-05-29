@@ -43,13 +43,11 @@ const formatDate = (date, formatStr) => {
   if (formatStr === "MMMM yyyy") {
     return `${months[date.getMonth()]} ${date.getFullYear()}`;
   } else if (formatStr === "MMM d, yyyy") {
-    return `${
-      shortMonths[date.getMonth()]
-    } ${date.getDate()}, ${date.getFullYear()}`;
+    return `${shortMonths[date.getMonth()]
+      } ${date.getDate()}, ${date.getFullYear()}`;
   } else if (formatStr === "PPP") {
-    return `${days[date.getDay()]}, ${
-      shortMonths[date.getMonth()]
-    } ${date.getDate()}, ${date.getFullYear()}`;
+    return `${days[date.getDay()]}, ${shortMonths[date.getMonth()]
+      } ${date.getDate()}, ${date.getFullYear()}`;
   } else if (formatStr === "EEE") {
     return shortDays[date.getDay()];
   } else if (formatStr === "d") {
@@ -131,6 +129,8 @@ const Appointments = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [taskText, setTaskText] = useState("");
   const [patientName, setPatientName] = useState("");
+  const [patientId, setPatientId] = useState("");
+
 
   const todayKey = formatDate(new Date(), "yyyy-MM-dd");
 
@@ -203,6 +203,10 @@ const Appointments = () => {
   };
 
   const handleDateClick = (day) => {
+    setSelectedTime("");
+    setTaskText("");
+    setPatientName("");
+    setPatientId("");
     setSelectedDate(day);
     setIsModalOpen(true);
   };
@@ -229,23 +233,20 @@ const Appointments = () => {
           <div
             key={day.getTime()}
             className={`p-3 h-[35px] cursor-pointer border border-slate-200 hover:bg-blue-50 transition-all duration-200 relative flex items-center justify-between group hover:shadow-sm
-              ${
-                !isSameMonth(day, monthStart)
-                  ? "text-slate-400 bg-slate-50 hover:bg-slate-100"
-                  : "text-slate-800 bg-white hover:bg-blue-50"
+              ${!isSameMonth(day, monthStart)
+                ? "text-slate-400 bg-slate-50 hover:bg-slate-100"
+                : "text-slate-800 bg-white hover:bg-blue-50"
               }
-              ${
-                isToday
-                  ? "bg-gradient-to-br from-blue-100 to-indigo-100 border-blue-300 shadow-sm"
-                  : ""
+              ${isToday
+                ? "bg-gradient-to-br from-blue-100 to-indigo-100 border-blue-300 shadow-sm"
+                : ""
               }
             `}
             onClick={() => handleDateClick(cloneDay)}
           >
             <div
-              className={`font-semibold text-sm transition-colors ${
-                isToday ? "text-blue-700" : ""
-              } ${!isSameMonth(day, monthStart) ? "text-slate-400" : ""}`}
+              className={`font-semibold text-sm transition-colors ${isToday ? "text-blue-700" : ""
+                } ${!isSameMonth(day, monthStart) ? "text-slate-400" : ""}`}
             >
               {formattedDate}
             </div>
@@ -279,7 +280,7 @@ const Appointments = () => {
   };
 
   const handleTaskSubmit = () => {
-    if (!selectedTime || !taskText) return;
+    if (!selectedTime || !taskText || !patientName || !patientId) return;
 
     const dateKey = formatDate(selectedDate, "yyyy-MM-dd");
 
@@ -330,13 +331,34 @@ const Appointments = () => {
         <div className="bg-white border-2 border-slate-200 rounded-2xl shadow-xl p-6 h-[500px] bg-gradient-to-br from-white to-slate-50">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Today's Schedule
+              Today's Appointments
             </h3>
-            <div className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-              {formatDate(new Date(), "MMM d, yyyy")}
-            </div>
           </div>
-
+          <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
+            {(tasks[todayKey] && tasks[todayKey].length > 0) ? (
+              tasks[todayKey].map((task, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 border rounded-lg shadow-sm bg-white hover:bg-blue-50 transition-all flex justify-between items-center"
+                >
+                  <div>
+                    <div className="text-sm font-medium text-blue-800">
+                      {task.time}
+                    </div>
+                    <div className="text-sm text-gray-700">{task.task}</div>
+                  </div>
+                  <button
+                    onClick={() => deleteTask(todayKey, idx)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-500 text-sm">No appointments today.</div>
+            )}
+          </div>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {(tasks[todayKey] || []).length === 0 ? (
               <div className="text-center py-8">
@@ -458,6 +480,21 @@ const Appointments = () => {
                   ))}
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Patient ID
+                </label>
+                <input
+                  type="text"
+                  value={patientId}
+                  onChange={(e) => setPatientId(e.target.value)}
+                  placeholder="Enter patient ID"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
