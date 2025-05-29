@@ -3,6 +3,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import toast from 'react-hot-toast';
+import { id } from 'date-fns/locale';
 
 const AuthContext = createContext(null)
 
@@ -60,6 +61,7 @@ export const AuthProvider = ({children}) => {
             email: userData.data.email,
             role: userData.role,
             fullName:userData.data.fullName,
+            id:userData.data.doctorId || userData.data.adminId
           }));
           toast.success(`Login successful!`);
           return userData.role;

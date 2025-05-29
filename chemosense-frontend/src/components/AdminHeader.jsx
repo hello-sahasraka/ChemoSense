@@ -1,10 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../utils/Auth";
 
 
 const AdminHeader = () => {
+
+    const [adminName, setAdminName] = useState("Admin Name");
+    const [adminId, setAdminId] = useState("Admin ID");
+
+    useEffect(() => {
+        const admin = JSON.parse(localStorage.getItem('user'));
+        if (admin) {
+            setAdminName(admin.fullName);
+            setAdminId(admin.id);
+        }
+    }, []);
+
     const auth = useAuth();
     const navigate = useNavigate();
 
@@ -21,8 +33,8 @@ const AdminHeader = () => {
                     <IoPersonCircleOutline size={45} />
                     {/* Admin Name & ID */}
                     <div>
-                        <h2 className="m-0 text-sm font-bold">Admin Name</h2>
-                        <p className="m-0 text-xs text-gray-500 italic">#Admin-ID</p>
+                        <h2 className="m-0 text-sm font-bold italic">{adminName}</h2>
+                        <p className="m-0 text-xs text-gray-500 italic">#{adminId}</p>
                     </div>
                 </div>
 
