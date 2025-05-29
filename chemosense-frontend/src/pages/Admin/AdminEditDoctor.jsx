@@ -70,12 +70,13 @@ const AdminEditDoctor = () => {
         const payload = {
           uid: doctorid
         };
-        const response = await axios.post("http://192.168.8.143:8000/admin/delete_doctor/", payload);
+
+        const response = await axios.post(`${import.meta.env.VITE_REACT_ADDRESS}/admin/delete_doctor/`, payload);
 
         if (response.data.error) {
           throw new Error(response.data.error);
         }
-        
+
         toast.dismiss();
         await getDoctorList(); // refresh list
         console.log("Document deleted successfully.");
