@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { useAuth } from "../../utils/Auth";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,16 @@ import { useNavigate } from "react-router-dom";
 
 
 const DocHeader = () => {
+    const [doctorName, setDoctorName] = useState("Doctor Name");
+    const [doctorId, setDoctorId] = useState("Doctor ID");
+
+    useEffect(() => {
+        const doctor = JSON.parse(localStorage.getItem('user'));
+        if (doctor) {
+            setDoctorName(doctor.fullName);
+            setDoctorId(doctor.id);
+        }
+    }, []);
 
     const auth = useAuth();
     const navigate = useNavigate();
@@ -22,8 +32,8 @@ const DocHeader = () => {
                 <IoPersonCircleOutline size={45} />
                 {/* Admin Name & ID */}
                 <div>
-                    <h2 className="m-0 text-sm font-bold">Doctor Name</h2>
-                    <p className="m-0 text-xs text-gray-500 italic">#Doctor-ID</p>
+                    <h2 className="m-0 text-sm font-bold italic">{doctorName}</h2>
+                    <p className="m-0 text-xs text-gray-500 italic">#{doctorId}</p>
                 </div>
             </div>
 
