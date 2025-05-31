@@ -8,6 +8,7 @@ export default function DashboardLayout() {
       <Stack.Screen name="Notification" options={{ title: "Notifications" }} />
       <Stack.Screen name="PatEditProfile" options={{ title: "Edit Profile" }} />
       <Stack.Screen name="Chatbot" options={{ title: "Chatbot" }} />
+      <Stack.Screen name="Calendar" options={{ title: "Calendar" }} />
       {/* Add other dashboard-specific screens here */}
     </Stack>
   );
