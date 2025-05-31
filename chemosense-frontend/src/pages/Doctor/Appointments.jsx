@@ -295,6 +295,11 @@ const Appointments = () => {
     setSelectedTime("");
     setTaskText("");
     setIsModalOpen(false);
+
+    console.log("Selected Time:", selectedTime);
+    console.log("Task Text:", taskText);
+    console.log("Patient Name:", patientName);
+    console.log("Patient ID:", patientId);
   };
 
   const deleteTask = (dateKey, taskIndex) => {
