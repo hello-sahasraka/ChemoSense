@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUserCircle, FaEdit, FaEye, FaEyeSlash } from "react-icons/fa";
 import { db } from "../../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import emailjs from "@emailjs/browser";
 
 const AdminSettingsDetails = () => {
-
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -36,16 +37,14 @@ const AdminSettingsDetails = () => {
     const fetchData = async () => {
       const data = await getPatientData(user.uid);
       console.log(data);
-      
+
       if (data) setForm((prev) => ({ ...prev, ...data }));
     };
 
     if (user?.uid) {
       fetchData();
     }
-
   }, []);
-
 
   const [editable, setEditable] = useState({
     firstName: false,
@@ -61,15 +60,48 @@ const AdminSettingsDetails = () => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   const toggleShow = (which) =>
     setShowPwd((s) => ({ ...s, [which]: !s[which] }));
-  const handleSave = () => {
-    console.log("Saved:", form);
-    alert("Profile updated!");
+  const navigate = useNavigate();
+
+  // Initialize EmailJS with your Public Key
+  // Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS Public Key
+  useEffect(() => {
+    emailjs.init("VEGtfij-yBJ1JMw_d");
+  }, []);
+
+  const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+  };
+
+  const handleSave = async () => {
+    console.log("Updated Settings (JSON):", JSON.stringify(form, null, 2));
     setEditable({
       firstName: false,
       lastName: false,
       email: false,
       nic: false,
     });
+
+    const otp = generateOtp();
+    const userEmail = form.email; // Assuming form.email holds the recipient's email
+
+    const templateParams = {
+      email: userEmail, // Matches {{email}} in EmailJS template
+      passcode: otp, // Matches {{passcode}} in EmailJS template
+      // Add other parameters as needed for your email template, e.g., time: "15 minutes"
+    };
+
+    try {
+      await emailjs.send(
+        "service_92mvamb", // Your EmailJS Service ID
+        "template_zuj62ee", // Your EmailJS Template ID
+        templateParams
+      );
+      console.log("OTP sent successfully!");
+      navigate("/otp", { state: { otp: otp, email: userEmail } }); // Navigate to OTP page with state
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+      alert("Failed to send OTP. Please try again.");
+    }
   };
 
   return (

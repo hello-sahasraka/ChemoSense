@@ -18,6 +18,7 @@ import DocSettings from "./pages/Doctor/DocSettings";
 import SubHeader from "./components/Doctor/SubHeader";
 import AdminSettings from "./pages/Admin/AdminSettings";
 import AdminSettingsDetails from "./pages/Admin/AdminSettingsDetails";
+import Otp from "./pages/Admin/Otp.jsx"; // Assuming Otp.jsx is in src/pages/Admin
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./utils/Auth";
 import ProtectedRoute from "./utils/ProtectedRoute";
@@ -29,11 +30,12 @@ import DoctorDashboardContent from "./pages/Doctor/DoctorDashboardContent";
 function App() {
   return (
     <AuthProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen w-screen overflow-hidden">
         <BrowserRouter>
           <Toaster position="top-center" />
           <Routes>
             <Route path="/" element={<Login />} />
+            <Route path="/otp" element={<Otp />} />
 
             {/* Admin Dashboard */}
             <Route path="/admin" element={<AdminDashboard />}>
