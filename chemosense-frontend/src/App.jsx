@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Login from "./pages/Login";
 import DoAdmin1 from "./pages/DoAdmin1";
 import DoAdmin2 from "./pages/DoAdmin2";
@@ -25,8 +25,15 @@ import Notification from "./pages/Doctor/Notification";
 import Appointments from "./pages/Doctor/Appointments";
 import DashboardContent from "./pages/Admin/dashboardContent";
 import DoctorDashboardContent from "./pages/Doctor/DoctorDashboardContent";
+import { handleForegroundMessage, requestPermissionAndGetToken } from "./config/firebase";
 
 function App() {
+  useEffect(() => {
+    requestPermissionAndGetToken();
+    const response = handleForegroundMessage();
+    console.log(response);
+    
+  }, []);
   return (
     <AuthProvider>
       <div className="flex h-screen overflow-hidden">
