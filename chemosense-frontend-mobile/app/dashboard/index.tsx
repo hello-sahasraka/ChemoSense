@@ -25,7 +25,13 @@ import {
   where,
   orderBy,
   limit,
+  onSnapshot, // Added onSnapshot import
+  QuerySnapshot, // Moved import to top level
+  QueryDocumentSnapshot, // Moved import to top level
+  addDoc, // Added addDoc import
+  serverTimestamp, // Added serverTimestamp import
 } from "firebase/firestore";
+import * as Haptics from "expo-haptics"; // Import Haptics
 import { db } from "../../firebase";
 import { Alert } from "react-native";
 
@@ -39,7 +45,7 @@ const PatDashboard = () => {
   const [bloodOxygen, setBloodOxygen] = useState<number | null>(null);
   const [temperature, setTemperature] = useState<number | null>(null);
   const [riskLevel, setRiskLevel] = useState<string | null>(null);
-  const MAX_POINTS = 20;
+  const MAX_POINTS = 10; // Changed from 20 to 10 as per user's clarification
 
   const auth = getAuth();
   const firestoreDb = getFirestore();
@@ -54,6 +60,8 @@ const PatDashboard = () => {
 
   useEffect(() => {
     const user = auth.currentUser;
+    let unsubscribePredictions: (() => void) | undefined;
+
     if (user) {
       const fetchUserName = async () => {
         try {
@@ -73,48 +81,84 @@ const PatDashboard = () => {
       };
       fetchUserName();
 
-      const fetchHealthDataAndRisk = async () => {
-        try {
-          const predictionsCollectionRef = collection(
-            firestoreDb,
-            "patients",
-            user.uid,
-            "predictions"
-          );
-          const latestPredictionQuery = query(
-            predictionsCollectionRef,
-            orderBy("timestamp", "desc"),
-            limit(1)
-          );
-          const querySnapshot = await getDocs(latestPredictionQuery);
+      const predictionsCollectionRef = collection(
+        firestoreDb,
+        "patients",
+        user.uid,
+        "predictions"
+      );
+      const predictionsQuery = query(
+        predictionsCollectionRef,
+        orderBy("timestamp", "desc"),
+        limit(MAX_POINTS)
+      );
 
-          if (!querySnapshot.empty) {
-            const latestPredictionDoc = querySnapshot.docs[0];
-            const data = latestPredictionDoc.data();
+      unsubscribePredictions = onSnapshot(
+        predictionsQuery,
+        (querySnapshot: QuerySnapshot) => {
+          const newHeartRates: number[] = [];
+          let latestBloodOxygen: number | null = null;
+          let latestTemperature: number | null = null;
+          let latestRiskLevel: string | null = null;
 
-            setHeartRate(data.heart_rate ? [data.heart_rate] : []);
-            setBloodOxygen(data.oxygen_saturation || null);
-            setTemperature(data.body_temperature || null);
-            setRiskLevel(data.risk_level);
+          querySnapshot.docs.forEach(
+            (doc: QueryDocumentSnapshot, index: number) => {
+              const data = doc.data();
+              if (data.heart_rate !== undefined) {
+                newHeartRates.unshift(data.heart_rate); // Add to the beginning to keep chronological order for chart
+              }
 
-            console.log("Fetched risk_level:", data.risk_level);
-            console.log("Fetched heart_rate:", data.heart_rate);
-
-            if (data.risk_level === "High Risk") {
-              Alert.alert(
-                "High Risk Alert",
-                "Your predicted risk level is high. Please consult with a medical professional.",
-                [{ text: "OK" }]
-              );
+              // Only update latest values from the most recent prediction (first doc in desc order)
+              if (index === 0) {
+                latestBloodOxygen = data.oxygen_saturation || null;
+                latestTemperature = data.body_temperature || null;
+                latestRiskLevel = data.risk_level || null;
+              }
             }
-          } else {
-            console.log("No health data found for this user.");
+          );
+
+          setHeartRate(newHeartRates);
+          setBloodOxygen(latestBloodOxygen);
+          setTemperature(latestTemperature);
+          setRiskLevel(latestRiskLevel);
+
+          console.log("Fetched heart_rates:", newHeartRates);
+          console.log("Fetched latest risk_level:", latestRiskLevel);
+
+          if (latestRiskLevel === "High Risk") {
+            Alert.alert(
+              "High Risk Alert",
+              "Your predicted risk level is high. Please consult with a medical professional.",
+              [{ text: "OK" }]
+            );
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); // Trigger haptic feedback
+
+            // Add high risk notification to Firestore
+            if (user) {
+              const notificationsCollectionRef = collection(
+                firestoreDb,
+                "notifications"
+              );
+              addDoc(notificationsCollectionRef, {
+                userId: user.uid,
+                title: "High Risk Alert",
+                description:
+                  "Your predicted risk level is high. Please consult with a medical professional.",
+                icon: "alert-triangle", // Icon for high risk
+                timestamp: serverTimestamp(),
+              }).catch((notificationError) => {
+                console.error(
+                  "Error adding high risk notification:",
+                  notificationError
+                );
+              });
+            }
           }
-        } catch (error) {
-          console.error("Error fetching health data and risk:", error);
+        },
+        (error: Error) => {
+          console.error("Error fetching real-time health data:", error);
         }
-      };
-      fetchHealthDataAndRisk();
+      );
     }
 
     const today = new Date();
@@ -125,7 +169,13 @@ const PatDashboard = () => {
       day: "numeric",
     };
     setCurrentDate(today.toLocaleDateString(undefined, options));
-  }, [auth, firestoreDb]);
+
+    return () => {
+      if (unsubscribePredictions) {
+        unsubscribePredictions();
+      }
+    };
+  }, [auth, firestoreDb]); // Removed sound from dependency array
 
   return (
     <ScrollView className="flex-1 bg-gray-50 px-5 pt-4 pb-6">
