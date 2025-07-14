@@ -10,6 +10,7 @@ import {
   View,
   Text,
 } from "react-native";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase"; // adjust path accordingly if firebaseConfig is in project root
 import { getAuth } from "firebase/auth";
@@ -139,13 +140,19 @@ export default function PatEditProfile() {
           Edit Profile
         </Text>
 
-        <View className="mb-5">
-          <Image
-            source={{ uri: "https://randomuser.me/api/portraits/women/44.jpg" }}
-            style={{ width: 96, height: 96, borderRadius: 48 }}
-            resizeMode="cover"
-            onError={(e) => console.warn("Image error:", e.nativeEvent.error)}
-          />
+        <View className="mb-5 relative">
+          <Ionicons name="person-circle-outline" size={96} color="gray" />
+          <TouchableOpacity
+            className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full"
+            onPress={() =>
+              Alert.alert(
+                "Edit Profile Picture",
+                "This feature is not yet implemented."
+              )
+            }
+          >
+            <Feather name="edit" size={20} color="white" />
+          </TouchableOpacity>
         </View>
 
         <View className="w-11/12 bg-white rounded-lg p-5 shadow-md">
