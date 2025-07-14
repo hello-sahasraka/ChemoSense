@@ -288,7 +288,7 @@ const Appointments = () => {
       ...prev,
       [dateKey]: [
         ...(prev[dateKey] || []),
-        { time: selectedTime, task: taskText },
+        { time: selectedTime, task: taskText, patientName: patientName, patientId: patientId },
       ],
     }));
 
@@ -334,31 +334,6 @@ const Appointments = () => {
               Today's Appointments
             </h3>
           </div>
-          <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
-            {(tasks[todayKey] && tasks[todayKey].length > 0) ? (
-              tasks[todayKey].map((task, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 border rounded-lg shadow-sm bg-white hover:bg-blue-50 transition-all flex justify-between items-center"
-                >
-                  <div>
-                    <div className="text-sm font-medium text-blue-800">
-                      {task.time}
-                    </div>
-                    <div className="text-sm text-gray-700">{task.task}</div>
-                  </div>
-                  <button
-                    onClick={() => deleteTask(todayKey, idx)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="text-gray-500 text-sm">No appointments today.</div>
-            )}
-          </div>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {(tasks[todayKey] || []).length === 0 ? (
               <div className="text-center py-8">
@@ -396,8 +371,10 @@ const Appointments = () => {
                   >
                     <div>
                       <div className="font-semibold text-slate-900">
-                        {t.task}
+                        {t.patientName}
                       </div>
+                      <div className="text-sm text-gray-500">{t.patientId}</div>
+                      <div className="text-sm text-gray-500">{t.task}</div>
                       <div className="text-sm text-blue-600 font-medium bg-blue-100 px-2 py-1 rounded-lg inline-block mt-1">
                         {t.time}
                       </div>
