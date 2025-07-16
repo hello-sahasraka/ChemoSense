@@ -1,43 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { collection, addDoc, deleteDoc, getDocs, doc} from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 const formatDate = (date, formatStr) => {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const shortMonths = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const shortMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const shortDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   if (formatStr === "MMMM yyyy") {
@@ -133,6 +101,8 @@ const Appointments = () => {
 
 
   const todayKey = formatDate(new Date(), "yyyy-MM-dd");
+
+  
 
   const renderHeader = () => (
     <div className="flex justify-between items-center mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
@@ -279,39 +249,79 @@ const Appointments = () => {
     );
   };
 
-  const handleTaskSubmit = () => {
+  const handleTaskSubmit = async () => {
     if (!selectedTime || !taskText || !patientName || !patientId) return;
 
     const dateKey = formatDate(selectedDate, "yyyy-MM-dd");
 
+    const newAppointment = {
+    date: dateKey,
+    time: selectedTime,
+    task: taskText,
+    patientName,
+    patientId,
+  };
+
+    try {
+    const docRef = await addDoc(collection(db, "appointments"), newAppointment);
+
     setTasks((prev) => ({
       ...prev,
-      [dateKey]: [
-        ...(prev[dateKey] || []),
-        { time: selectedTime, task: taskText, patientName: patientName, patientId: patientId },
-      ],
+      [dateKey]: [...(prev[dateKey] || []), { id: docRef.id, ...newAppointment }],
     }));
 
+    // Reset modal fields
     setSelectedTime("");
     setTaskText("");
     setIsModalOpen(false);
+  } catch (error) {
+    console.error("Error adding appointment:", error);
+  }
+    
   };
 
-  const deleteTask = (dateKey, taskIndex) => {
-    setTasks((prev) => ({
-      ...prev,
-      [dateKey]: prev[dateKey].filter((_, idx) => idx !== taskIndex),
-    }));
+  const deleteTask = async (dateKey, taskIndex) => {
+    const taskToDelete = tasks[dateKey][taskIndex];
+
+    try {
+      await deleteDoc(doc(db, "appointments", taskToDelete.id));
+
+      setTasks((prev) => ({
+        ...prev,
+        [dateKey]: prev[dateKey].filter((_, idx) => idx !== taskIndex),
+      }));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
+  useEffect(() => {
+  const fetchAppointments = async () => {
+    const appointmentsSnapshot = await getDocs(collection(db, "appointments"));
+    const appointmentsData = {};
+
+    appointmentsSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const dateKey = data.date;
+      if (!appointmentsData[dateKey]) {
+        appointmentsData[dateKey] = [];
+      }
+      appointmentsData[dateKey].push({ id: doc.id, ...data });
+    });
+
+    setTasks(appointmentsData);
+  };
+
+  fetchAppointments();
+}, []);
 
   return (
     <div className="max-w-7xl mx-auto  max-h-screen">
       <div className="mb-8">
-        <h1 className="text-xl  mt-5 font-bold text-gray-900 ">
-          Appointment Manager
+        <h1 className="text-[30px] font-bold text-gray-900 ">
+          Appointments
         </h1>
-        <p className="text-gray-600">
-          Manage your schedule and appointments efficiently
+        <p className="text-gray-600 text-[12px]">
+          Manage your schedule and appointments
         </p>
       </div>
 
