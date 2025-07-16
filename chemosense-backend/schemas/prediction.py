@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from firebase.firebase import save_prediction, notify_high_risk_user_and_doctors
+from firebase.firebase import save_prediction, notify_high_risk_user_and_doctors, get_patientDetails
 from collections import defaultdict
 import numpy as np
 import pandas as pd
@@ -25,8 +25,16 @@ class InputData(BaseModel):
     Age: int
     Gender: int
     Weight_kg: float
-    Height_m: float # Optional, can be calculated if not provided
+    Height_m: float
     UID: str
+
+def is_high_risk(pred, spO2, temp, hr):
+    return (
+        pred == 1 or
+        spO2 < 95 or
+        temp < 36 or temp > 37.5 or
+        hr < 60 or hr > 100
+    )
 
 def run_prediction(input_data: InputData):
 
@@ -56,7 +64,11 @@ def run_prediction(input_data: InputData):
     # input_df = pd.DataFrame([input_dict], columns=columns)
     input_df = pd.DataFrame([input_dict]).reindex(columns=columns)
     scaled_input = scaler.transform(input_df)
-    prediction = model.predict(scaled_input)[0]
+    model_prediction = model.predict(scaled_input)[0]
+
+    is_risk = is_high_risk(model_prediction, input_data.Oxygen_Saturation, input_data.Body_Temperature, input_data.Heart_Rate)
+    prediction = 1 if is_risk else 0
+
 
     if prediction == 1:
         prediction = "High Risk"
@@ -67,11 +79,15 @@ def run_prediction(input_data: InputData):
         if (user_risk_counter[input_data.UID] >= 5):
             logger.warning(f"[run_prediction] High risk prediction count exceeded for UID: {input_data.UID}")
 
+            # Fetch patient details
+            patient_details = get_patientDetails(input_data.UID)
+
             # Notify user and doctors
             notify_high_risk_user_and_doctors(
                 user_uid=input_data.UID,
                 title="⚠️ High Risk Detected",
-                body="A patient was flagged as high risk. Please review immediately."
+                body="A patient {} was flagged as High Risk. Please review immediately.".format(patient_details["patient_id"]),
+                data=patient_details
             )
             logger.info(f"[run_prediction] High risk prediction count: {user_risk_counter[input_data.UID]}")
             user_risk_counter[input_data.UID] = 0

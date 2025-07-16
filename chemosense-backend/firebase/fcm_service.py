@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-def send_fcm_notification(token: str, title: str, body: str):
+def send_fcm_notification(token: str, title: str, body: str, data: dict):
     logger.info(f"[send_fcm_notification] Sending FCM notification to token: {token[:10]}...")
     message = messaging.Message(
     notification=messaging.Notification(
@@ -12,8 +12,9 @@ def send_fcm_notification(token: str, title: str, body: str):
         body=body,
         image="https://cdn-icons-png.flaticon.com/256/564/564619.png"
     ),
+    data=data,
     token=token
-)
+    )
     try:
         response = messaging.send(message)
         logger.info(f"[send_fcm_notification] Successfully sent notification to token: {token[:10]}")

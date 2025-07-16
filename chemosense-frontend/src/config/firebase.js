@@ -45,7 +45,8 @@ export const requestPermissionAndGetToken = async () => {
   };
   
   // Handle messages while app is in foreground
-  export const handleForegroundMessage = onMessage(messaging, (payload) => {
-    console.log("Foreground message received:", payload);
-    // show in-app notification, toast, etc.
+  export const handleForegroundMessage = () => {
+  onMessage(messaging, (payload) => {
+    console.log("📬 Foreground message received:", payload);
   });
+};
