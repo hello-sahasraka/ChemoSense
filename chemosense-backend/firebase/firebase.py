@@ -109,9 +109,29 @@ def save_notification_token(token: str, uid: str, role: str):
     except Exception as e:
         logger.error(f"[save_notification_token] Failed to update token: {str(e)}")
         return {"error": "Failed to save token."}
-    
-    
-def notify_high_risk_user_and_doctors(user_uid: str, title: str, body: str):
+
+
+def get_patientDetails(user_uid: str):
+    logger.info(f"[get_patientDetails] Fetching patient details for UID: {user_uid}")
+    try:
+        doc_ref = db.collection("patients").document(user_uid)
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            logger.warning(f"[get_patientId_and_name] Patient UID '{user_uid}' not found in Firestore.")
+            return {"error": "Patient not found."}
+
+        data = doc.to_dict()
+        patient_id = data.get("admissionNo", "None")
+        name = data.get("fullName", "Empty")
+        contactNumber = data.get("contactNumber", "Empty")
+
+        return {"patient_id": patient_id, "name": name, "contactNumber": contactNumber}
+    except Exception as e:
+        logger.error(f"[get_patientDetails] Error fetching patient details for UID {user_uid}: {e}")
+        return {"error": str(e)}
+
+def notify_high_risk_user_and_doctors(user_uid: str, title: str, body: str, data: dict = None):
     logger.info(f"[notify_high_risk_user_and_doctors] Sending notification for high-risk user UID: {user_uid}")
     # Notify user
     patient_ref = db.collection("patients").document(user_uid)
@@ -121,10 +141,10 @@ def notify_high_risk_user_and_doctors(user_uid: str, title: str, body: str):
         logger.info(f"[notify_high_risk_user_and_doctors] Found FCM token for patient UID: {user_uid}")
         if token:
             logger.info(f"[notify_high_risk_user_and_doctors] Sending notification to patient UID: {user_uid}")
-            send_fcm_notification(token, title, body)
+            send_fcm_notification(token, title, body, data)
     # Notify doctors
     for doc in db.collection("doctors").stream():
         token = doc.to_dict().get("fcm_token")
         if token:
             logger.info(f"[notify_high_risk_user_and_doctors] Sending notification to doctor")
-            send_fcm_notification(token, title, body)
+            send_fcm_notification(token, title, body, data)

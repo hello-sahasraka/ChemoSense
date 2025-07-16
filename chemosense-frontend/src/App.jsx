@@ -25,15 +25,53 @@ import Notification from "./pages/Doctor/Notification";
 import Appointments from "./pages/Doctor/Appointments";
 import DashboardContent from "./pages/Admin/dashboardContent";
 import DoctorDashboardContent from "./pages/Doctor/DoctorDashboardContent";
-import { handleForegroundMessage, requestPermissionAndGetToken } from "./config/firebase";
+import { requestPermissionAndGetToken, messaging } from "./config/firebase";
+import { onMessage } from "firebase/messaging";
 
 function App() {
   useEffect(() => {
-    requestPermissionAndGetToken();
-    const response = handleForegroundMessage();
-    console.log(response);
-    
-  }, []);
+      requestPermissionAndGetToken();
+      // handleForegroundMessage(); 
+      onMessage(messaging, (payload) => {
+          console.log("📬 Foreground message received:", payload);
+
+          const notificationData = payload.notification || {};
+          const dataPayload = payload.data || {};
+
+          let notificationArray = JSON.parse(localStorage.getItem('notifications')) || [];
+          notificationArray.push(dataPayload);
+          localStorage.setItem('notifications', JSON.stringify(notificationArray));
+
+          const title = notificationData.title  || "No Title";
+          const body = notificationData.body  || "Empty";
+          const image = notificationData.image || null;
+
+          const name = dataPayload.name || "Anonymous";
+          const patient_id = dataPayload.patient_id || "Unknown";
+          const contactNumber = dataPayload.contactNumber || "No Contact";
+
+          // Background Notification Data
+          console.log("🔔 Notification Details:");
+          console.log("• Title:", title);
+          console.log("• Text:", body);
+          if (image) console.log("• Image URL:", image);
+          else console.log("• Image: None");
+
+          // Foreground Notification Data
+          console.log("📬 Foreground message received:");
+          console.log("• Patient ID:", patient_id);
+          console.log("• Name:", name);
+          console.log("• Contact No:", contactNumber);
+
+          // Show notification if permission is granted
+          if (Notification.permission === 'granted') {
+            new Notification(title, {
+              body: `${body}\nFrom: ${name}`,
+              icon: image || undefined
+            });
+        }
+        });
+    }, []);
   return (
     <AuthProvider>
       <div className="flex h-screen overflow-hidden">
