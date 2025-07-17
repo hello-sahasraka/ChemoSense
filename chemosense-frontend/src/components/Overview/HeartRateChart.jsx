@@ -11,21 +11,21 @@ const HeartRateChart = () => {
       const now = new Date();
       const newPoint = {
         time: now.getSeconds(), 
-        bpm: Math.floor(Math.random() * (90 - 75 + 1)) + 75, // simulate random data
+        bpm: Math.floor(Math.random() * (85 - 75 + 1)) + 75, // simulate random data
       };
 
       setData(prevData => {
         const updatedData = [...prevData, newPoint];
         return updatedData.slice(-10); // keep only the latest 10 points
       });
-    }, 1000); // update every second
+    }, 12000); // update every 12 seconds
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
 
   return (
     <motion.div
-    className="bg-gray-200 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-300"
+    className="bg-gray-200 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl lg:col-span-2 p-6 border border-gray-300"
     
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}

@@ -11,15 +11,15 @@ const Spo2LevelChart = () => {
           const now = new Date();
           const newPoint = {
             time: now.getSeconds(), 
-            Spo2: Math.floor(Math.random() * (100 - 85 + 1)) + 85, // simulate random data
+            Spo2: Math.floor(Math.random() * (100 - 95 + 1)) + 95, // simulate random data
           };
     
           setData(prevData => {
             const updatedData = [...prevData, newPoint];
             return updatedData.slice(-10); // keep only the latest 10 points
           });
-        }, 5000); // update every second
-    
+        }, 12000); // update every 12 seconds
+
         return () => clearInterval(interval); // cleanup on unmount
       }, []);
 
