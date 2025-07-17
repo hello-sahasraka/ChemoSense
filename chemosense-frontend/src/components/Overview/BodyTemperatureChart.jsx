@@ -10,14 +10,14 @@ const BodyTemperatureChart = () => {
       const now = new Date();
       const newPoint = {
         time: now.getMinutes(),
-        temp: Math.floor(Math.random() * (40 - 33 + 1)) + 33, // simulate random data
+        temp: Math.floor(Math.random() * (37 - 33 + 1)) + 33, // simulate random data
       };
 
       setData(prevData => {
         const updatedData = [...prevData, newPoint];
         return updatedData.slice(-10); // keep only the latest 10 points
       });
-    }, 5000); // update every 5 sec
+    }, 12000); // update every 12 sec
 
     return () => clearInterval(interval);
   }, []);
