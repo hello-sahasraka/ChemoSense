@@ -56,7 +56,7 @@ const Notification = () => {
         icon: getIconForNotification(notification.reason),
         riskLevel: notification.riskLevel || "Critical",
         level: notification.level || "critical",
-        phone: notification.phone || "+94 711867163",
+        phone: notification.contactNumber,
       }));
 
       setNotifications(processedNotifications);
