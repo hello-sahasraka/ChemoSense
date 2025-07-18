@@ -160,7 +160,7 @@ export default function PatEditProfile() {
           <Text className="text-sm font-bold text-gray-700 mb-2">Name</Text>
           <TextInput
             className="bg-gray-200 p-3 rounded-md mb-4"
-            value={profile.name}
+            value="Sithum Janalal" //{profile.name}
             onChangeText={(text) => handleChange("name", text)}
             editable={true} // Make editable to allow saving changes
           />
@@ -180,7 +180,7 @@ export default function PatEditProfile() {
           </Text>
           <TextInput
             className="bg-gray-200 p-3 rounded-md mb-4"
-            value={profile.phone}
+            value="0771177170" //{profile.phone}
             onChangeText={(text) => handleChange("phone", text)}
             keyboardType="phone-pad"
             editable={true} // Make editable
@@ -197,10 +197,12 @@ export default function PatEditProfile() {
           />
 
           {/* Username */}
-          <Text className="text-sm font-bold text-gray-700 mb-2">Username</Text>
+          <Text className="text-sm font-bold text-gray-700 mb-2">
+            admissionNo
+          </Text>
           <TextInput
             className="bg-gray-200 p-3 rounded-md mb-4"
-            value={profile.username}
+            value="P/2025/39" //{profile.username}
             onChangeText={(text) => handleChange("username", text)}
             editable={true} // Make editable
           />
