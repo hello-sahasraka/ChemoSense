@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StatusBar, ScrollView, View, Text, SafeAreaView } from "react-native";
+import {
+  StatusBar,
+  ScrollView,
+  View,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons"; // Import Feather
 import {
   collection,
@@ -8,6 +15,9 @@ import {
   orderBy,
   onSnapshot,
   Timestamp,
+  writeBatch,
+  getDocs,
+  doc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth"; // Import getAuth
 import { db } from "../../firebase"; // Correct path to firebase.ts
@@ -23,6 +33,30 @@ interface NotificationItem {
 export default function Notification() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const auth = getAuth(); // Initialize auth
+
+  const handleClearAllNotifications = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("No user logged in to clear notifications.");
+      return;
+    }
+
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid)
+    );
+    try {
+      const querySnapshot = await getDocs(q);
+      const batch = writeBatch(db);
+      querySnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      console.log("All notifications cleared.");
+    } catch (error) {
+      console.error("Error clearing notifications: ", error);
+    }
+  };
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -78,7 +112,12 @@ export default function Notification() {
   return (
     <SafeAreaView className="flex-1 bg-white pt-12 px-4">
       <StatusBar barStyle="dark-content" backgroundColor="#f3f4f6" />
-      <Text className="text-2xl font-bold ml-2 mt-2 mb-8">Notifications</Text>
+      <View className="flex-row justify-between items-center mb-8 mt-2 ml-2">
+        <Text className="text-2xl font-bold">Notifications</Text>
+        <TouchableOpacity onPress={handleClearAllNotifications}>
+          <Text className="text-blue-500 font-semibold">Clear All</Text>
+        </TouchableOpacity>
+      </View>
 
       <View className="bg-gray-300 px-4 justify-center h-10 w-full mb-8">
         <Text className="text-lg font-semibold text-gray-600">Today</Text>
@@ -114,7 +153,9 @@ export default function Notification() {
                     {note.description}
                   </Text>
                   <Text className="text-xs text-gray-500 mt-1">
-                    {note.timestamp.toDate().toLocaleString()}
+                    {note.timestamp
+                      ? note.timestamp.toDate().toLocaleString()
+                      : ""}
                   </Text>
                 </View>
               </View>
