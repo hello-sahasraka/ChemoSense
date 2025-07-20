@@ -45,6 +45,7 @@ const PatDashboard = () => {
   const [bloodOxygen, setBloodOxygen] = useState<number | null>(null);
   const [temperature, setTemperature] = useState<number | null>(null);
   const [riskLevel, setRiskLevel] = useState<string | null>(null);
+  const [latestNotification, setLatestNotification] = useState<any>(null);
   const MAX_POINTS = 10; // Changed from 20 to 10 as per user's clarification
 
   const auth = getAuth();
@@ -61,8 +62,32 @@ const PatDashboard = () => {
   useEffect(() => {
     const user = auth.currentUser;
     let unsubscribePredictions: (() => void) | undefined;
+    let unsubscribeNotifications: (() => void) | undefined;
 
     if (user) {
+      const notificationsCollectionRef = collection(
+        firestoreDb,
+        "notifications"
+      );
+      const notificationsQuery = query(
+        notificationsCollectionRef,
+        where("userId", "==", user.uid),
+        orderBy("timestamp", "desc"),
+        limit(1)
+      );
+
+      unsubscribeNotifications = onSnapshot(
+        notificationsQuery,
+        (querySnapshot: QuerySnapshot) => {
+          if (!querySnapshot.empty) {
+            const latestNotif = querySnapshot.docs[0].data();
+            setLatestNotification(latestNotif);
+          } else {
+            setLatestNotification(null);
+          }
+        }
+      );
+
       const fetchUserName = async () => {
         try {
           const userDocRef = doc(firestoreDb, "patients", user.uid);
@@ -174,6 +199,9 @@ const PatDashboard = () => {
       if (unsubscribePredictions) {
         unsubscribePredictions();
       }
+      if (unsubscribeNotifications) {
+        unsubscribeNotifications();
+      }
     };
   }, [auth, firestoreDb]); // Removed sound from dependency array
 
@@ -221,10 +249,10 @@ const PatDashboard = () => {
               heartRate.length
                 ? heartRate.map((y, x) => ({ x, y }))
                 : [
-                    { x: 0, y: 70 },
-                    { x: 1, y: 72 },
-                    { x: 2, y: 75 },
-                  ]
+                  { x: 0, y: 70 },
+                  { x: 1, y: 72 },
+                  { x: 2, y: 75 },
+                ]
             }
             xDomain={{ min: 0, max: MAX_POINTS - 1 }}
             yDomain={{ min: 50, max: 120 }}
@@ -362,16 +390,29 @@ const PatDashboard = () => {
               </View>
             </View>
             <View className="items-center justify-center flex-1">
-              <View className="bg-gray-50 rounded-full p-3 mb-2">
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={24}
-                  color="#6B7280"
-                />
-              </View>
-              <Text className="text-xs text-gray-500 text-center">
-                All Clear
-              </Text>
+              {latestNotification ? (
+                <>
+                  <View className="bg-red-50 rounded-full p-3 mb-2">
+                    <Ionicons name="alert-circle-outline" size={24} color="#DC2626" />
+                  </View>
+                  <Text className="text-xs text-gray-500 text-center">
+                    {latestNotification.title}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <View className="bg-gray-50 rounded-full p-3 mb-2">
+                    <Ionicons
+                      name="checkmark-circle-outline"
+                      size={24}
+                      color="#6B7280"
+                    />
+                  </View>
+                  <Text className="text-xs text-gray-500 text-center">
+                    All Clear
+                  </Text>
+                </>
+              )}
             </View>
           </TouchableOpacity>
 
