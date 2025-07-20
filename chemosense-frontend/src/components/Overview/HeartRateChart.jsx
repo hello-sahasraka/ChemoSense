@@ -2,26 +2,24 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend  } from "recharts";
 
-const HeartRateChart = () => {
+const HeartRateChart = ({ heartRate }) => {
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const newPoint = {
-        time: now.getSeconds(), 
-        bpm: Math.floor(Math.random() * (85 - 75 + 1)) + 75, // simulate random data
-      };
 
-      setData(prevData => {
+    const now = new Date();
+    const newPoint = {
+        time: now.getSeconds(), 
+        bpm: heartRate,
+    };
+
+    setData(prevData => {
         const updatedData = [...prevData, newPoint];
         return updatedData.slice(-10); // keep only the latest 10 points
-      });
-    }, 12000); // update every 12 seconds
+    });
 
-    return () => clearInterval(interval); // cleanup on unmount
-  }, []);
+  }, [heartRate]);
 
   return (
     <motion.div

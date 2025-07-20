@@ -1,6 +1,3 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
-import AdminHeader from '../components/AdminHeader'
 import { Outlet } from 'react-router-dom'
 import Docnavbar from '../components/Doctor/Docnavbar'
 import DocHeader from '../components/Doctor/DocHeader'
