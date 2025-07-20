@@ -1,28 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SubHeader from "../../components/Doctor/SubHeader";
 import { FaEdit, FaUserCircle, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "../../utils/Auth";
+import { db } from "../../config/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  getAuth,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
+import toast from "react-hot-toast";
 
 const DocSettings = () => {
-  const initial = {
-    firstName: "Kane",
-    lastName: "Williamson",
-    email: "kane7788@gmail.com",
-    mbbsNo: "200014883749",
-    currentPassword: "password123",
+  const { user } = useAuth();
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    mbbsNo: "",
+    currentPassword: "",
     newPassword: "",
-    contactNo: "0712345678",
-    joiningDate: "2020/04/23",
-    ward1: "Ward 01",
-    ward2: "Ward 02",
-    specification:
-      "Dr. Rakheem Cornwall, MD, PhD, is a renowned oncologist specializing in lung cancer and immunotherapy at Memorial Horizon Cancer Center. With over 18 years of experience...",
-  };
-
-  const [form, setForm] = useState(initial);
-  const [editable, setEditable] = useState(
-    Object.keys(initial).reduce((acc, key) => ({ ...acc, [key]: false }), {})
-  );
+    contactNo: "",
+    joiningDate: "",
+    ward1: "",
+    ward2: "",
+    specification: "",
+  });
+  const [editable, setEditable] = useState({});
   const [showPwd, setShowPwd] = useState({ current: false, new: false });
+
+  useEffect(() => {
+    const fetchDoctorData = async () => {
+      console.log("Current user:", user);
+      if (user && user.uid) {
+        try {
+          const docRef = doc(db, "doctors", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const name = data.fullName?.replace("Dr. ", "");
+            setForm((prev) => ({
+              ...prev,
+              ...data,
+              firstName: name?.split(" ")[0] || "",
+              lastName: name?.split(" ")[1] || "",
+              ward1: data.wards?.[0] || "",
+              ward2: data.wards?.[1] || "",
+            }));
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching document:", error);
+          toast.error("Failed to fetch doctor data.");
+        }
+      }
+    };
+
+    fetchDoctorData();
+  }, [user]);
 
   const toggleEdit = (field) =>
     setEditable((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -35,12 +72,39 @@ const DocSettings = () => {
   const toggleShow = (which) =>
     setShowPwd((prev) => ({ ...prev, [which]: !prev[which] }));
 
-  const handleSave = () => {
-    console.log("Saved:", form);
-    alert("Settings updated!");
-    setEditable(
-      Object.keys(initial).reduce((acc, key) => ({ ...acc, [key]: false }), {})
-    );
+  const handleSave = async () => {
+    if (!user?.uid) return;
+
+    const { newPassword, currentPassword, ...profileData } = form;
+    const docRef = doc(db, "doctors", user.uid);
+
+    try {
+      const { ward1, ward2, ...restOfProfileData } = profileData;
+      await updateDoc(docRef, {
+        ...restOfProfileData,
+        fullName: `Dr. ${form.firstName} ${form.lastName}`,
+        wards: [form.ward1, form.ward2],
+      });
+
+      if (newPassword && currentPassword) {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+        const credential = EmailAuthProvider.credential(
+          currentUser.email,
+          currentPassword
+        );
+
+        await reauthenticateWithCredential(currentUser, credential);
+        await updatePassword(currentUser, newPassword);
+        toast.success("Password updated successfully!");
+      }
+
+      toast.success("Profile updated successfully!");
+      setEditable({});
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error(error.message);
+    }
   };
 
   return (
