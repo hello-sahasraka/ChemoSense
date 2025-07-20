@@ -1,44 +1,51 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoSearch, IoPersonCircleOutline } from "react-icons/io5";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { BiSolidEdit } from "react-icons/bi";
+import { Forward } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from "firebase/firestore";
+import { db } from '../../config/firebase';
 import SubHeader from '../../components/Doctor/SubHeader';
 
-const DATA_LIST = [
-  {"name": "Anushka Perera","nic": "951234567V","cancer_type": "Breast Cancer","contact_no": "+94 771234567"},
-  {"name": "Dinuka Fernando","nic": "880123456V","cancer_type": "Lung Cancer","contact_no": "+94 772345678"},
-  {"name": "Kasuni Silva","nic": "940987654V","cancer_type": "Leukemia","contact_no": "+94 773456789"},
-  {"name": "Ruwan Jayasuriya","nic": "920456789V","cancer_type": "Colorectal Cancer","contact_no": "+94 774567890"},
-  {"name": "Shehani Karunaratne","nic": "970123123V","cancer_type": "Ovarian Cancer","contact_no": "+94 775678901"},
-  {"name": "Sahan Madushanka","nic": "930111222V","cancer_type": "Liver Cancer","contact_no": "+94 776789012"},
-  {"name": "Chamodi Wickramasinghe","nic": "960444333V","cancer_type": "Stomach Cancer","contact_no": "+94 777890123"},
-  {"name": "Nisal Weerakkody","nic": "910555666V","cancer_type": "Prostate Cancer","contact_no": "+94 778901234"},
-  {"name": "Bimsara Dissanayake","nic": "950222111V","cancer_type": "Pancreatic Cancer","contact_no": "+94 779012345"},
-  {"name": "Isuri Rathnayake","nic": "990999888V","cancer_type": "Thyroid Cancer","contact_no": "+94 770123456"}
-]
 
 const PatientDetails = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState(DATA_LIST);
+  const [patients, setPatients] = useState([])
+  const [filteredData, setFilteredData] = useState(patients);
   const navigate = useNavigate();
+
+    const getPatientList = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "patients"));
+        const patientsArray = [];
+        querySnapshot.forEach((doc) => {
+          patientsArray.push({id: doc.id, ...doc.data()}); // include doc id if needed
+        });
+        setPatients(patientsArray);
+        setFilteredData(patientsArray)
+         // set them all at once (efficient)
+        console.log("Patients fetched:", patientsArray); // this will show correct list
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      }
+    }
+  
+    useEffect(() => {
+      getPatientList(); 
+    }, [])
 
 
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-    const filtered = DATA_LIST.filter(data=> data.name.toLowerCase().includes(term) || data.nic.toLowerCase().includes(term));
+    const filtered = patients.filter(data=> data.fullName.toLowerCase().includes(term) || data.admissionNo.toLowerCase().includes(term));
     setFilteredData(filtered);
   };
 
-  const handleEdit = (nic) => {
-    navigate(`/doctor/details/${nic}`);
+  const handleEdit = (uid) => {
+    console.log(uid);
+    navigate(`/doctor/details/${uid}`);
   };
-
-  const handleDelete = (index) => {
-    del(index);
-  }
 
   return (
     <div>
@@ -64,7 +71,7 @@ const PatientDetails = () => {
                   <thead className='sticky top-0 z-10 bg-white'>
                       <tr>
                           <th className="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">Name</th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">Patient NIC</th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">Admission No</th>
                           <th className="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">Cancer Type</th>
                           <th className="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">Contact No</th>
                           <th></th>
@@ -80,19 +87,15 @@ const PatientDetails = () => {
                         >
                           <td className='px-6 py-3 whitespace-nowrap text-sm font-semibold text-gray-500 flex gap-2 items-center'>
                                     <IoPersonCircleOutline size={30} />
-                                    {data.name}
+                                    {data.fullName}
                           </td>
-                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.nic}</td>
-                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.cancer_type}</td>
-                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.contact_no}</td>
+                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.admissionNo}</td>
+                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.cancerType}</td>
+                          <td className='px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-500'>{data.contactNumber}</td>
                           <td className='px-6 py-3 whitespace-nowrap'>
-                            <button className='text-indigo-600 hover:text-indigo-400 mr-2 cursor-pointer'
-                            onClick={()=> handleEdit(data.nic)}
-                            ><BiSolidEdit size={18} /></button>
-
-                            <button className='text-red-600 hover:text-red-400 cursor-pointer'
-                            onClick={handleDelete}
-                            ><RiDeleteBin6Line size={18} /></button>
+                            <button className='text-red-700 hover:text-red-500 cursor-pointer'
+                            onClick={()=> handleEdit(data.id)}
+                            ><Forward size={25} /></button>
                           </td>
                           
                         </motion.tr>

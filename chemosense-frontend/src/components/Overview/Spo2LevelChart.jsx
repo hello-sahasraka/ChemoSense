@@ -2,26 +2,24 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend  } from "recharts";
 
-const Spo2LevelChart = () => {
+const Spo2LevelChart = ({spo2Level}) => {
 
     const [data, setData] = useState([]);
     
-      useEffect(() => {
-        const interval = setInterval(() => {
-          const now = new Date();
-          const newPoint = {
-            time: now.getSeconds(), 
-            Spo2: Math.floor(Math.random() * (100 - 95 + 1)) + 95, // simulate random data
-          };
-    
-          setData(prevData => {
-            const updatedData = [...prevData, newPoint];
-            return updatedData.slice(-10); // keep only the latest 10 points
-          });
-        }, 12000); // update every 12 seconds
+    useEffect(() => {
 
-        return () => clearInterval(interval); // cleanup on unmount
-      }, []);
+      const now = new Date();
+      const newPoint = {
+          time: now.getSeconds(), 
+          Spo2: spo2Level,
+      };
+
+      setData(prevData => {
+          const updatedData = [...prevData, newPoint];
+          return updatedData.slice(-10); // keep only the latest 10 points
+      });
+
+    }, [spo2Level]);
 
   return (
     <motion.div

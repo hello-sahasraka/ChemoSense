@@ -2,25 +2,23 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend  } from "recharts";
 
-const BodyTemperatureChart = () => {
+const BodyTemperatureChart = ({bodyTemp}) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const newPoint = {
-        time: now.getMinutes(),
-        temp: Math.floor(Math.random() * (37 - 33 + 1)) + 33, // simulate random data
-      };
 
-      setData(prevData => {
+    const now = new Date();
+    const newPoint = {
+        time: now.getSeconds(), 
+        temp: bodyTemp,
+    };
+
+    setData(prevData => {
         const updatedData = [...prevData, newPoint];
         return updatedData.slice(-10); // keep only the latest 10 points
-      });
-    }, 12000); // update every 12 sec
+    });
 
-    return () => clearInterval(interval);
-  }, []);
+  }, [bodyTemp]);
 
   return (
     <motion.div

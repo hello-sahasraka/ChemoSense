@@ -1,27 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  User,
-  Bell,
-  AlertTriangle,
-  Heart,
-  Thermometer,
-  Activity,
-  Phone,
-  Eye,
-  Search,
-  X,
-} from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { User, Bell, AlertTriangle, Heart, Thermometer, Phone, Eye, Search, X } from "lucide-react";
+import SubHeader from "../../components/Doctor/SubHeader";
 
-const SubHeader = ({ stype }) => (
-  <div className="p-6">
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">{stype}</h2>
-      <p className="text-base text-gray-600 mt-1">
-        We're thrilled to have you here!
-      </p>
-    </div>
-  </div>
-);
 
 const Notification = () => {
   const [notifications, setNotifications] = useState([]);

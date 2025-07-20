@@ -6,7 +6,6 @@ import { BiSolidEdit } from "react-icons/bi";
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from "firebase/firestore";
-import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import axios from "axios";
 import Swal from 'sweetalert2';
