@@ -31,9 +31,9 @@ class InputData(BaseModel):
 def is_high_risk(pred, spO2, temp, hr):
     return (
         pred == 1 or
-        spO2 < 95 or
-        temp < 36 or temp > 37.5 or
-        hr < 60 or hr > 100
+        spO2 < 75 or
+        temp < 25 or temp > 37.5 or
+        hr < 75 or hr > 90
     )
 
 def run_prediction(input_data: InputData):
