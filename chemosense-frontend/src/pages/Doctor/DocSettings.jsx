@@ -29,6 +29,7 @@ const DocSettings = () => {
   });
   const [editable, setEditable] = useState({});
   const [showPwd, setShowPwd] = useState({ current: false, new: false });
+  const [profileData, setProfileData] = useState({});
 
   useEffect(() => {
     const fetchDoctorData = async () => {
@@ -39,6 +40,7 @@ const DocSettings = () => {
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
+            setProfileData(data);
             const name = data.fullName?.replace("Dr. ", "");
             setForm((prev) => ({
               ...prev,
@@ -118,9 +120,9 @@ const DocSettings = () => {
           <FaUserCircle className="text-6xl text-gray-400" />
           <div className="ml-4">
             <h2 className="text-2xl font-semibold text-gray-700 capitalize">
-              {form.firstName} {form.lastName}
+              Dr. {profileData.fullName}
             </h2>
-            <p className="text-sm text-gray-500">{form.email}</p>
+            <p className="text-sm text-gray-500">{profileData.email}</p>
           </div>
         </div>
 
@@ -222,7 +224,7 @@ const DocSettings = () => {
       <div className="mt-4 flex justify-end">
         <button
           onClick={handleSave}
-          className="bg-[#1330BE] text-white px-6 py-2 rounded-full hover:bg-[#0f2599] transition font-semibold text-lg shadow-[0_10px_20px_rgba(0,0,139,0.3)] hover:shadow-[0_10px_25px_rgba(0,0,139,0.4)]"
+          className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-600 transition font-semibold text-sm shadow-[0_10px_20px_rgba(0,0,139,0.3)] hover:shadow-[0_10px_25px_rgba(0,0,139,0.4)]"
         >
           Save Changes
         </button>

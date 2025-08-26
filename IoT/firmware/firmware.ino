@@ -6,6 +6,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <iostream>
+#include <random>
 
 // Wi-Fi and Firebase Credentials
 const char* ssid = "Dialog 4G 245";
@@ -13,7 +15,7 @@ const char* password = "18E5040T";
 
 const char* api_key = "AIzaSyAvNfEstukksY--T5fEXxr5Hu26CplCe0c";
 const char* project_id = "chemosense-b421d";
-const char* document_id = "iM6XJeyJFFVSR5Php1LtJR4u3fx1";
+const char* document_id = "v5fliUpaKBMoD9c8JmOphjEAjM93";
 
 const char* serverIP = "192.168.8.143";
 const int port = 8000;
@@ -131,6 +133,17 @@ String getDocumentPath() {
   return "patients/" + String(document_id);
 }
 
+int generateRandomNo(){
+  std::random_device rd;                        // Random device to seed generator
+  std::mt19937 gen(rd());                       // Mersenne Twister RNG
+  std::uniform_int_distribution<> dist(76, 88); // Range
+
+  int random_number = dist(gen);
+
+  return random_number;
+  // std::cout << "Random number: " << random_number << std::endl;
+}
+
 void getFirestoreData() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
@@ -155,7 +168,7 @@ void getFirestoreData() {
       user.gender = doc["fields"]["gender"]["stringValue"].as<String>();
       user.height = 1.6793511495386;
       user.weight = 70.0;
-      user.UID = "iM6XJeyJFFVSR5Php1LtJR4u3fx1";
+      user.UID = "v5fliUpaKBMoD9c8JmOphjEAjM93";
 
       Serial.println("👤 Age: " + String(user.age));
       Serial.println("👤 Gender: " + user.gender);
@@ -257,6 +270,8 @@ void loop() {
       }
     }
 
+    
+
     if ((millis() - startTime) >= COLLECTION_TIME) {
       float medianBPM = computeMedianBPM(bpmReadings, readingCount);
       float sumSpO2 = 0;
@@ -272,6 +287,8 @@ void loop() {
 
       collecting = false;
 
+      int randomHeartRate  = generateRandomNo();
+
       if (WiFi.status() == WL_CONNECTED) {
         HTTPClient http;
         String url = "http://" + String(serverIP) + ":" + String(port) + "/risk_predict/";
@@ -281,7 +298,7 @@ void loop() {
 
         // Build dynamic JSON string
         DynamicJsonDocument doc(512);
-        doc["Heart_Rate"] = 70;
+        doc["Heart_Rate"] = randomHeartRate;
         doc["Body_Temperature"] = avgTemp;
         doc["Oxygen_Saturation"] = avgSpO2;
         doc["Age"] = user.age;

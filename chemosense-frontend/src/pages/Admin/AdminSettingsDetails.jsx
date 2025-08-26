@@ -122,7 +122,7 @@ const AdminSettingsDetails = () => {
         <PasswordField
           label="Current Password"
           name="currentPassword"
-          value={form.password}
+          // value={form.password}
           show={showPwd.current}
           onToggle={() => toggleShow("current")}
           onChange={handleChange}
