@@ -1,8 +1,8 @@
 # 🚀 ChemoSense
 
-**ChemoSense** is a health monitoring system designed to track **post-chemotherapy complications** in patients using vital signs data. The system leverages **React Native for mobile**, **React for web frontend**, and **FastAPI for the backend**, offering a seamless cross-platform experience.  
+**ChemoSense** is a cross-platform health monitoring system that tracks **post-chemotherapy complications** using vital signs data. 
 
-The solution focuses on:
+## 🎯 The solution focuses on:
 
 - **🩺 Patient Risk Monitoring**  
   Monitors vital signs (body temperature, heart rate, SpO₂) to classify patients into **High, Medium, or Low risk** categories.  
