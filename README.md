@@ -1,6 +1,7 @@
 # 🚀 ChemoSense
 
 **ChemoSense** is a cross-platform health monitoring system that tracks **post-chemotherapy complications** using vital signs data. 
+***
 
 ## 🎯 The solution focuses on:
 
